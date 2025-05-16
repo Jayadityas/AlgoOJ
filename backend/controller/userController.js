@@ -83,7 +83,7 @@ const loginUser = async (req, res) => {
         //generating jwt tokens for managing user sessions
         const token = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
 
-        res.json({ success: true, message: 'User logged in successfully!', token });
+        res.json({ success: true, message: `${existingUser.role} logged in successfully!`, token });
 
 
     } catch (error) {
@@ -97,7 +97,7 @@ const getUserProfile = async (req, res) => {
 
     try {
         
-        const userId = req.body.userId;
+        const userId = req.user.id;
 
         //check if the user exists in db
         //since password is sensitive data we are not sending it to the client
