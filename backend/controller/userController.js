@@ -79,11 +79,13 @@ const loginUser = async (req, res) => {
         if (!isPasswordCorrect) {
             return res.status(400).json({ success: false, message: 'Incorrect Password!' });
         }
+        
+        const role = existingUser.role
 
         //generating jwt tokens for managing user sessions
         const token = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
 
-        res.json({ success: true, message: `${existingUser.role} logged in successfully!`, token });
+        res.json({ success: true, message: `${existingUser.role} logged in successfully!`, token , role});
 
 
     } catch (error) {
@@ -114,18 +116,25 @@ const getUserProfile = async (req, res) => {
     }
 }
 
+const updateUserProfile = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { username, email } = req.body;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { username, email },
+      { new: true }
+    ).select('-password'); // exclude password
+
+    res.status(200).json({ message: 'Profile updated Successfully!', updatedUser });
+  } catch (err) {
+    console.error('Update error:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-export { registerUser , loginUser , getUserProfile }
+export { registerUser , loginUser , getUserProfile , updateUserProfile}

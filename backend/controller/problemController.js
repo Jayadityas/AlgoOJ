@@ -22,21 +22,18 @@ const createProblem = async (req, res) => {
                 return res.status(400).json({ success: false, message: 'Problem already exists!' });
             }
 
-            //Extract uploaded files from req.files
-            const inputFiles = req.files?.inputFiles || [];
-            const outputFiles = req.files?.outputFiles || [];
+            const { inputFiles, outputFiles } = req.files;
 
-            console.log("REQ.FILES FULL:", req.files);
-            console.log("INPUT FILES:", req.files?.inputFiles);
-            console.log("OUTPUT FILES:", req.files?.outputFiles);
+            console.log('Input Files:', inputFiles);
+            console.log('Output Files:', outputFiles);
 
-            if(inputFiles.length !== outputFiles.length){
-                return res.status(400).json({ message: 'Number of input and output files must match.' });
+            if (!inputFiles || !outputFiles || inputFiles.length !== outputFiles.length) {
+            return res.status(400).json({ error: "Input and output files must be provided in matching pairs." });
             }
 
-            const hiddenTests = inputFiles.map((inputFile, idx) => ({
+            const hiddenTests = inputFiles.map((inputFile, index) => ({
                 inputFilePath: inputFile.path,
-                outputFilePath: outputFiles[idx].path
+                outputFilePath: outputFiles[index]?.path,
             }));
 
             // Create a new problem
@@ -51,6 +48,7 @@ const createProblem = async (req, res) => {
                 tags:tags ? JSON.parse(tags) : [],
                 hiddenTests,
             });
+
             const savedProblem = await newProblem.save();
             res.status(201).json({ success: true, message: 'Problem created successfully!'})
 
