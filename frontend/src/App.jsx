@@ -8,6 +8,8 @@ import Contact from './pages/Contact.jsx';
 import Myprofile from './pages/Myprofile.jsx';
 import Navbar from './components/Navbar.jsx';
 import Footer from './components/Footer.jsx';
+import LeaderBoard from './pages/LeaderBoard.jsx';
+import ProblemPage from './pages/ProblemPage.jsx';
 
 
 function App() {
@@ -18,7 +20,8 @@ function App() {
       <Routes>
         <Route path='/' element={<Home/>} />
         <Route path='/problems' element={<Problems/>} />
-        {/* <Route path='/problems/:id' element={<Doctors/>} /> */}
+        <Route path='/leaderboard' element={<LeaderBoard/>}/>
+        <Route path='/problems/:id' element={<ProblemPage/>} />
         <Route path='/login' element={<Login/>} />
         <Route path='/about' element={<About/>} /> 
         <Route path='/contact' element={<Contact/>} />

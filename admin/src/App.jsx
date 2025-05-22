@@ -5,6 +5,7 @@ import Footer from './components/Footer.jsx';
 import AdminDashboard from './pages/AdminDashboard.jsx';
 import Login from './pages/Login.jsx';
 import CreateProblem from './pages/CreateProblem.jsx';
+import UpdateProblem from './pages/UpdateProblem.jsx';
 
 
 function App() {
@@ -16,7 +17,7 @@ function App() {
         <Route path='/' element={<AdminDashboard/>} />
         <Route path='/login' element={<Login/>} />
         <Route path='/create-problem' element={<CreateProblem/>} />
-        {/* <Route path='/problems/:id' element={<Doctors/>} /> */}
+        <Route path='/update-problem/:id' element={<UpdateProblem/>} />
         {/* <Route path='/my-profile' element={<Myprofile/>} /> */}
       </Routes>
 

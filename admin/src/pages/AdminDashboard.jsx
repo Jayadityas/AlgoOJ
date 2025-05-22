@@ -14,7 +14,7 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col md:flex-row relative pt-15">
+    <div className="min-h-screen bg-[#07034d] flex flex-col md:flex-row relative pt-15 ">
       {/* Sidebar */}
         <div className={`fixed md:static z-20 top-0 left-0 h-screen bg-white shadow-lg transform 
             ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} 
@@ -27,16 +27,16 @@ const AdminDashboard = () => {
         </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-6 ml-0 md:ml-64 w-full">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-800">ALL PROBLEMS</h1>
+      <div className="flex-1 p-6 mr-15 md:ml-15 w-full">
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-bold p-4 mb-4 ml-70 text-amber-300">ALL PROBLEMS</h1>
           <button onClick={toggleSidebar} className="md:hidden text-2xl text-gray-600">
             <FaEllipsisV />
           </button>
         </div>
 
         {/* All Problems List */}
-        <div className="space-y-4 ">
+        <div className="space-y-4 flex flex-col">
           {problems && problems.length > 0 ? (
             problems.map((problem) => (
               <div key={problem._id} className="flex justify-between items-center bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition">
@@ -63,7 +63,7 @@ const AdminDashboard = () => {
                   <button className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm flex items-center gap-1">
                     <FaEye /> View
                   </button>
-                  <button className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1 rounded text-sm flex items-center gap-1">
+                  <button onClick={() => navigate(`/update-problem/${problem._id}`)} className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1 rounded text-sm flex items-center gap-1">
                     <FaPen /> Update
                   </button>
                 </div>

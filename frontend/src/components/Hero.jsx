@@ -1,7 +1,9 @@
 import { motion } from "framer-motion";
 import ss2 from "../assets/ss2.png"; // Replace with your own image
+import {useNavigate} from 'react-router-dom'
 
 export default function Hero() {
+  const navigate = useNavigate()
   return (
     <section className="w-full dark:bg-gray-950 py-30 px-4 bg-[#07034d]">
       <div className="max-w-7xl mx-auto flex flex-col-reverse md:flex-row items-center justify-between gap-10">
@@ -14,17 +16,17 @@ export default function Hero() {
           transition={{ duration: 0.6 }}
         >
           <h1 className="text-4xl sm:text-5xl font-extrabold leading-tight text-amber-300 dark:text-white">
-            Master Competitive Coding on <span className="text-purple-600">THE OJ</span>
+            Master Competitive Coding on <span className="text-purple-400">THE OJ</span>
           </h1>
           <p className="mt-4 text-lg text-white dark:text-gray-300">
             A modern online judge platform for problem-solving, contests, and learning — fast and reliable.
           </p>
 
           <div className="mt-8 flex gap-4 flex-wrap">
-            <button className="px-6 py-3 rounded-full bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold text-lg hover:shadow-lg transition relative border-2 border-transparent hover:border-white animate-borderMove">
+            <button className="px-6 py-2 rounded-full bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold text-lg hover:shadow-lg transition relative border-transparent hover:border-white animate-borderMove">
               Get Started
             </button>
-            <button className="px-6 py-3 rounded-full border-2 border-purple-600 dark:border-purple-400 text-purple-600 dark:text-purple-400 font-semibold hover:bg-purple-100 dark:hover:bg-purple-900 transition">
+            <button onClick={()=>navigate('/problems')} className="px-6 py-2 rounded-full bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold text-lg hover:shadow-lg transition relative border-transparent hover:border-white animate-borderMove">
               View Problems
             </button>
           </div>

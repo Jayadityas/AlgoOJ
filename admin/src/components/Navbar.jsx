@@ -1,5 +1,4 @@
 import { useState, useEffect, useContext } from "react";
-import { Moon, Sun } from "lucide-react";
 import logo from "../assets/logo.jpg";
 import {useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -17,8 +16,8 @@ const Navbar = () => {
   }, [isDark]);
 
   const onSubmitHandler = () => {
-    setToken(false)
     localStorage.removeItem("token");
+    setToken(false)
     toast.success("Logout successfully");
     navigate('/login')
   }
@@ -35,12 +34,6 @@ const Navbar = () => {
       {/* Right Side Buttons */}
       <div className="flex items-center space-x-4">
         {/* Dark Mode Toggle */}
-        <button
-          onClick={() => setIsDark(!isDark)}
-          className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-all"
-        >
-          {isDark ? <Sun className="text-yellow-400" /> : <Moon className="text-gray-800" />}
-        </button>
 
         {!token && !adminData ? (
           <>
@@ -53,7 +46,7 @@ const Navbar = () => {
           <span onClick={()=>navigate('/my-profile')} className="text-gray-700 dark:text-gray-300 font-semibold cursor-pointer">👋{adminData?.username}</span>
           <button onClick={onSubmitHandler} className="relative px-5 py-2 font-semibold rounded-lg overflow-hidden bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white animate transition-all duration-300 hover:scale-105 shadow-lg">
               Logout
-            </button>
+          </button>
           </>
         )}
       </div>

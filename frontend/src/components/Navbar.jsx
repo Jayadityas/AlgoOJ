@@ -20,11 +20,12 @@ const Navbar = () => {
   }, [isDark]);
 
   const navItems = [
-    { name: "HOME", path: "/" },
-    { name: "PROBLEMS", path: "/problems" },
-    { name: "CONTACT", path: "/contact" },
-    { name: "ABOUT", path: "/about" },
-    { name: "ADMIN" , path:`${import.meta.env.VITE_ADMIN_URL}/login`}
+    { name: "Home", path: "/" },
+    { name: "Problems", path: "/problems" },
+    { name: "Leaderboard", path: "/leaderboard"},
+    { name: "Contact", path: "/contact" },
+    { name: "About", path: "/about" },
+    { name: "Admin" , path:`${import.meta.env.VITE_ADMIN_URL}/login`}
   ];
 
   const onSubmitHandler = () => {
@@ -36,7 +37,7 @@ const Navbar = () => {
 
 
   return (
-    <nav className="w-full h-18 px-6 py-4 flex items-center justify-between bg-[#ffffff] dark:bg-gray-900 shadow-lg fixed z-50">
+    <nav className="w-full h-16 px-6 py-4 flex items-center justify-between bg-[#ffffff] dark:bg-gray-900 shadow-lg fixed z-50">
       {/* Logo */}
       <div className="flex items-center space-x-3">
         <img src={logo} onClick={()=>navigate('/')} alt="Logo" className="h-15 w-15 cursor-pointer" />
@@ -44,7 +45,7 @@ const Navbar = () => {
       </div>
 
       {/* Navigation Links */}
-      <ul className="hidden md:flex ml-25 space-x-10 text-md font-medium">
+      <ul className="hidden md:flex ml-80 space-x-10 text-md font-medium">
                 
         {navItems.map(({ name, path }) => (
             <NavLink
@@ -88,12 +89,6 @@ const Navbar = () => {
       {/* Right Side Buttons */}
       <div className="flex items-center space-x-4">
         {/* Dark Mode Toggle */}
-        <button
-          onClick={() => setIsDark(!isDark)}
-          className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-all"
-        >
-          {isDark ? <Sun className="text-yellow-400" /> : <Moon className="text-gray-800" />}
-        </button>
 
         {!token && !userData ? (
           <>

@@ -63,6 +63,7 @@ const AdminContextProvider = (props) => {
         if(token){
             getAdminData()
         }
+        else setAdminData(false)
     },[token])
 
     useEffect(()=>{

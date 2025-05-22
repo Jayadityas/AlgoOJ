@@ -1,5 +1,6 @@
 import Problem from "../model/problemModel.js"
 import fs from 'fs'
+import path from "path"
 
 const createProblem = async (req, res) => {
 
@@ -105,46 +106,77 @@ const getProblemById = async (req, res) => {
 }
 
 const updateProblem = async (req, res) => {
-    try {
-        const { id } = req.params
-        const { role } = req.user
+  try {
+    const { id } = req.params;
+    const { role } = req.user;
 
-        if (role !== 'admin') {
-            return res.status(403).json({ success: false, message: 'You are not authorized to update a problem!' })
-        }
-
-        const updateData = { ...req.body }
-
-        // Handle new hidden test case files
-        const inputFiles = req.files?.inputFiles || [];
-        const outputFiles = req.files?.outputFiles || [];
-
-        if (inputFiles.length && inputFiles.length !== outputFiles.length) {
-            return res.status(400).json({ message: 'Number of input and output files must match.' })
-        }
-
-        if (inputFiles.length > 0) {
-            updateData.hiddenTests = inputFiles.map((inputFile, idx) => ({
-                inputFilePath: inputFile.path,
-                outputFilePath: outputFiles[idx].path
-            }));
-        }
-
-        updateData.samples = JSON.parse(updateData.samples)
-        updateData.tags = JSON.parse(updateData.tags)
-
-        const updatedProblem = await Problem.findByIdAndUpdate(id, updateData, { new: true });
-
-        if (updatedProblem) {
-            res.status(200).json({ success: true, message: 'Problem updated successfully!', updatedProblem })
-        } else {
-            res.status(400).json({ success: false, message: 'No problem exists!' });
-        }
-    } catch (error) {
-        console.error('Error updating problem:', error);
-        res.status(500).json({ success: false, message: 'Problem update failed!' });
+    if (role !== 'admin') {
+      return res.status(403).json({ success: false, message: 'Unauthorized' });
     }
-}
+
+    const updateData = {};
+
+    try {
+      console.log(req.body.samples)
+      updateData.samples = JSON.parse(req.body.samples || '[]');
+      updateData.tags = JSON.parse(req.body.tags || '[]');
+    } catch (err) {
+      return res.status(400).json({ success: false, message: 'Invalid JSON in samples or tags' });
+    }
+
+    // Plain text fields
+    ['title', 'description', 'inputFormat', 'outputFormat', 'constraints', 'difficulty'].forEach(key => {
+      if (req.body[key]) updateData[key] = req.body[key];
+    });
+
+    // Parse retained hidden test cases
+    let retainedTests = [];
+    try {
+      retainedTests = JSON.parse(req.body.retainTestIds || '[]');
+    } catch (err) {
+      retainedTests = [];
+    }
+
+    const problem = await Problem.findById(id);
+    if (!problem) {
+      return res.status(404).json({ success: false, message: 'Problem not found' });
+    }
+
+    const existingTests = problem.hiddenTests || [];
+    const retainedTestCases = existingTests.filter(test => retainedTests.includes(String(test._id)));
+
+    const inputFiles = req.files?.inputFiles || [];
+    const outputFiles = req.files?.outputFiles || [];
+
+    if (inputFiles.length !== outputFiles.length) {
+      return res.status(400).json({ success: false, message: 'Input/Output file count mismatch' });
+    }
+
+    const newHiddenTests = [];
+    for (let i = 0; i < inputFiles.length; i++) {
+      newHiddenTests.push({
+        inputFilePath: inputFiles[i].path,
+        outputFilePath: outputFiles[i].path
+      });
+    }
+
+    updateData.hiddenTests = [...retainedTestCases, ...newHiddenTests];
+
+    const updatedProblem = await Problem.findByIdAndUpdate(id,{ $set: updateData },{ new: true });
+
+
+    return res.status(200).json({
+      success: true,
+      message: 'Problem updated successfully!',
+      updatedProblem
+    });
+
+  } catch (error) {
+    console.error('Error updating problem:', error);
+    res.status(500).json({ success: false, message: 'Problem update failed!' });
+  }
+};
+
 
 const deleteProblem = async (req, res) => {
     try {

@@ -1,7 +1,10 @@
-// src/components/CallToAction.jsx
 import React from "react";
+import {NavLink, useNavigate} from 'react-router-dom'
 
 const CallToAction = () => {
+
+  const navigate = useNavigate()
+
   return (
     <div className="bg-[#07034d] py-30 text-white text-center">
       <h2 className="text-3xl sm:text-4xl font-extrabold">
@@ -9,12 +12,12 @@ const CallToAction = () => {
       </h2>
       <br />
       <p className="mb-6 text-lg">Join THE OJ and start solving real challenges today.</p>
-      <a
-        href="/register"
+      <button
+        onClick={()=>navigate('/login')}
         className="inline-block bg-white text-purple-600 font-semibold py-3 px-6 rounded-full shadow-lg hover:bg-gray-100 transition"
       >
         Create Account
-      </a>
+      </button>
     </div>
   );
 };
