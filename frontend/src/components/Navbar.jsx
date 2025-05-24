@@ -6,7 +6,6 @@ import { useContext } from "react";
 import { AppContext } from "../context/AppContext";
 import { toast } from "react-toastify";
 
-
 const Navbar = () => {
 
   const [isDark, setIsDark] = useState(false);
@@ -45,7 +44,7 @@ const Navbar = () => {
       </div>
 
       {/* Navigation Links */}
-      <ul className="hidden md:flex ml-80 space-x-10 text-md font-medium">
+      <ul className="hidden md:flex ml-80 space-x-6 text-md font-medium">
                 
         {navItems.map(({ name, path }) => (
             <NavLink
@@ -98,7 +97,10 @@ const Navbar = () => {
           </>
         ) : (
           <>
-          <span onClick={()=>navigate('/my-profile')} className="text-gray-700 dark:text-gray-300 font-semibold cursor-pointer">👋{userData?.username}</span>
+          <span onClick={()=>navigate('/my-profile')} className="text-gray-700 dark:text-gray-300 font-semibold cursor-pointer"><img
+            src={userData?.profileImage}
+            alt="profile"
+            className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-md"/></span>
           <button onClick={onSubmitHandler} className="relative px-5 py-2 font-semibold rounded-lg overflow-hidden bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white animate transition-all duration-300 hover:scale-105 shadow-lg">
               Logout
             </button>

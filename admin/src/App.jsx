@@ -6,6 +6,7 @@ import AdminDashboard from './pages/AdminDashboard.jsx';
 import Login from './pages/Login.jsx';
 import CreateProblem from './pages/CreateProblem.jsx';
 import UpdateProblem from './pages/UpdateProblem.jsx';
+import ViewProblem from './pages/ViewProblem.jsx';
 
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
         <Route path='/login' element={<Login/>} />
         <Route path='/create-problem' element={<CreateProblem/>} />
         <Route path='/update-problem/:id' element={<UpdateProblem/>} />
+        <Route path='/view-problem/:id' element={<ViewProblem/>}/>
         {/* <Route path='/my-profile' element={<Myprofile/>} /> */}
       </Routes>
 

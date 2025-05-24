@@ -35,7 +35,7 @@ const Problems = () => {
                   {problem.tags.map((tag, index) => (
                     <span
                       key={index}
-                      className={`px-2 py-1 bg-amber-200 rounded font-medium`}
+                      className={`px-2 py-0 bg-amber-200 rounded font-sm font-semibold`}
                     >
                       {tag}
                     </span>

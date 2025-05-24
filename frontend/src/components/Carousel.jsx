@@ -24,12 +24,12 @@ const Carousel = () => {
           {images.map((src, i) => (
             <div
               key={i}
-              className="flex justify-center items-center h-[300px] sm:h-[250px] md:h-[350px]"
+              className="flex justify-center rounded-2xl items-center h-[300px] sm:h-[250px] md:h-[350px]"
             >
               <img
                 src={src}
                 alt={`screenshot-${i}`}
-                className="w-[80%] sm:w-[70%] md:w-[60%] lg:w-[50%] xl:w-[400px] h-full object-contain "
+                className="w-[80%] sm:w-[70%] md:w-[60%] lg:w-[50%] xl:w-[400px] rounded-2xl h-full object-contain "
               />
             </div>
           ))}

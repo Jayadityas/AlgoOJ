@@ -11,10 +11,10 @@ const CallToAction = () => {
         Ready to level up your <span className="text-amber-300">coding?</span>
       </h2>
       <br />
-      <p className="mb-6 text-lg">Join THE OJ and start solving real challenges today.</p>
+      <p className="mb-6 text-lg">Join <span className="text-purple-400">THE OJ</span> community and start solving real challenges today.</p>
       <button
         onClick={()=>navigate('/login')}
-        className="inline-block bg-white text-purple-600 font-semibold py-3 px-6 rounded-full shadow-lg hover:bg-gray-100 transition"
+        className="inline-block bg-white text-purple-600 font-semibold py-3 px-6 rounded-full shadow-lg hover:bg-gray-100 cursor-pointer transition"
       >
         Create Account
       </button>

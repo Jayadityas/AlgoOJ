@@ -19,12 +19,12 @@ const Navbar = () => {
     localStorage.removeItem("token");
     setToken(false)
     toast.success("Logout successfully");
-    navigate('/login')
+    window.location.href = import.meta.env.VITE_FRONTEND_URL
   }
 
 
   return (
-    <nav className="w-full h-18 px-6 py-4 flex items-center justify-between bg-[#ffffff] dark:bg-gray-900 shadow-lg fixed z-50">
+    <nav className="w-full h-16 px-6 py-4 flex items-center justify-between bg-[#ffffff] dark:bg-gray-900 shadow-lg fixed z-50">
       {/* Logo */}
       <div className="flex items-center space-x-3">
         <img src={logo} onClick={()=>navigate('/')} alt="Logo" className="h-15 w-15 cursor-pointer" />

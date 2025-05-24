@@ -4,10 +4,10 @@ const About = () => {
   return (
     <div className="min-h-screen bg-[#07034d] py-30 px-4">
       <div className="max-w-5xl mx-auto bg-white p-8 rounded-2xl shadow-lg space-y-8">
-        <h1 className="text-4xl font-bold text-center text-gray-800">About THE OJ</h1>
+        <h1 className="text-4xl font-bold text-center text-blue-700">About THE OJ</h1>
 
         <p className="text-gray-600 text-center max-w-3xl mx-auto">
-          Welcome to <span className="font-semibold text-blue-600">THE OJ</span> – your go-to online judge platform built by developers, for developers. Our mission is to empower aspiring coders, students, and professionals with a reliable, scalable, and beginner-friendly problem-solving hub.
+          Welcome to <span className="font-semibold text-violet-700">THE OJ</span> – your go-to online judge platform built by developers, for developers. Our mission is to empower aspiring coders, students, and professionals with a reliable, scalable, and beginner-friendly problem-solving hub.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-6 text-gray-700">

@@ -2,6 +2,7 @@ import User from '../model/userModel.js'
 import validator from 'validator'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import cloudinary from '../config/cloudinary.js'
 
 
 const registerUser = async (req, res) => {
@@ -34,7 +35,8 @@ const registerUser = async (req, res) => {
         const newUserData = new User({
             username,
             email,
-            password:hashedPassword
+            password:hashedPassword,
+            profileImage:'https://res.cloudinary.com/ddxajykw2/image/upload/v1748023679/user_zvyqyd.png'
             
         });
 
@@ -103,7 +105,7 @@ const getUserProfile = async (req, res) => {
 
         //check if the user exists in db
         //since password is sensitive data we are not sending it to the client
-        const existingUser = await User.findById(userId).select('-password');
+        const existingUser = await User.findById(userId).select('-password').populate('solvedProblems', 'title');
         if(!existingUser) {
             return res.status(400).json({ success: false, message: 'User does not exist!' });
         }
@@ -121,19 +123,37 @@ const updateUserProfile = async (req, res) => {
     const userId = req.user.id;
     const { username, email } = req.body;
 
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      { username, email },
-      { new: true }
-    ).select('-password'); // exclude password
+    let profileImageUrl;
 
-    res.status(200).json({ message: 'Profile updated Successfully!', updatedUser });
+    // If file is uploaded
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: 'uploadsProfile',
+      });
+
+      profileImageUrl = result.secure_url;
+
+    }
+
+    const updateData = {
+      ...(username && { username }),
+      ...(email && { email }),
+      ...(profileImageUrl && { profileImage: profileImageUrl }),
+    };
+
+    const updatedUser = await User.findByIdAndUpdate(userId, updateData, {
+      new: true,
+    }).select('-password');
+
+    res.status(200).json({
+      message: 'Profile updated successfully',
+      updatedUser,
+    });
   } catch (err) {
     console.error('Update error:', err);
     res.status(500).json({ message: 'Server error' });
   }
 };
-
 
 
 

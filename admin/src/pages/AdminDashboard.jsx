@@ -60,7 +60,7 @@ const AdminDashboard = () => {
                   </div>
                 </div>
                 <div className="flex gap-2 mt-2 md:mt-0">
-                  <button className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm flex items-center gap-1">
+                  <button onClick={() => navigate(`/view-problem/${problem._id}`)} className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm flex items-center gap-1">
                     <FaEye /> View
                   </button>
                   <button onClick={() => navigate(`/update-problem/${problem._id}`)} className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1 rounded text-sm flex items-center gap-1">
