@@ -1,26 +1,26 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { AppContext } from '../context/AppContext';
+import { AdminContext } from '../context/AdminContext';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
 const Myprofile = () => {
-  const { userData, setUserData, backendUrl, token } = useContext(AppContext);
+  const { adminData, setAdminData, backendUrl, token } = useContext(AdminContext);
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({
-    username: userData?.username || '',
-    email: userData?.email || '',
+    username: adminData?.username || '',
+    email: adminData?.email || '',
   });
 
   const [image, setImage] = useState(null);
-  const [preview, setPreview] = useState(userData?.profileImage);
+  const [preview, setPreview] = useState(adminData?.profileImage);
   const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
-    if (userData?.profileImage) {
-      setPreview(userData.profileImage);
+    if (adminData?.profileImage) {
+      setPreview(adminData.profileImage);
     }
-  }, [userData]);
+  }, [adminData]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -45,7 +45,7 @@ const Myprofile = () => {
         },
       });
 
-      setUserData((prev) => ({
+      setAdminData((prev) => ({
         ...prev,
         username: res.data.updatedUser.username || prev.username,
         email: res.data.updatedUser.email || prev.email,
@@ -81,7 +81,7 @@ const Myprofile = () => {
     }
   };
 
-  if (!userData) return (
+  if (!adminData) return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#07034d] to-[#1e0750]">
       <motion.div
         animate={{ rotate: 360 }}
@@ -205,17 +205,17 @@ const Myprofile = () => {
                   <p className="text-xl font-semibold text-white">
                     <span className="text-indigo-300 mr-2">👤</span> 
                     <span className="text-gray-300">Name:</span> 
-                    <span className="ml-2 text-white">{userData.username}</span>
+                    <span className="ml-2 text-white">{adminData.username}</span>
                   </p>
                   <p className="text-lg text-gray-300">
                     <span className="text-indigo-300 mr-2">📧</span> 
                     <span className="text-gray-300">Email:</span> 
-                    <span className="ml-2 text-white">{userData.email}</span>
+                    <span className="ml-2 text-white">{adminData.email}</span>
                   </p>
                   <p className="text-md text-gray-300">
                     <span className="text-indigo-300 mr-2">📈</span> 
                     <span className="text-gray-300">Submissions:</span> 
-                    <span className="ml-2 text-white">{userData.submissionsCount}</span>
+                    <span className="ml-2 text-white">{adminData.submissionsCount}</span>
                   </p>
                 </div>
                 <motion.button
@@ -302,8 +302,8 @@ const Myprofile = () => {
             whileHover={{ scale: 1.005 }}
             className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl shadow-lg p-6 space-y-4 transition-all duration-300"
           >
-            {userData.solvedProblems && userData.solvedProblems.length > 0 ? (
-              userData.solvedProblems.map((prob, idx) => (
+            {adminData.solvedProblems && adminData.solvedProblems.length > 0 ? (
+              adminData.solvedProblems.map((prob, idx) => (
                 <motion.div
                   key={idx}
                   initial={{ opacity: 0, x: -20 }}

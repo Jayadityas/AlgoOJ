@@ -3,12 +3,12 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { AdminContext } from '../context/AdminContext';
+import { motion } from 'framer-motion';
 
 const UpdateProblem = () => {
-
   const { id } = useParams();
   const navigate = useNavigate();
-  const {token,backendUrl,setToken} = useContext(AdminContext);
+  const {token, backendUrl, setToken} = useContext(AdminContext);
   const [retainTestIds, setRetainTestIds] = useState([]);
   const [existingHiddenTests, setExistingHiddenTests] = useState([]);
 
@@ -98,16 +98,14 @@ const UpdateProblem = () => {
 
     const fd = new FormData();
     for (let key in formData) {
-    if (key === 'tags') {
+      if (key === 'tags') {
         fd.append('tags', JSON.stringify(formData.tags));
-    } else {
+      } else {
         fd.append(key, formData[key]);
-    }
+      }
     }
 
     fd.append('samples', JSON.stringify(samples));
-
-
     fd.append('retainTestIds', JSON.stringify(retainTestIds));
 
     inputFiles.forEach(file => fd.append('inputFiles', file));
@@ -134,119 +132,249 @@ const UpdateProblem = () => {
     }
   };
 
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        when: "beforeChildren"
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 10
+      }
+    }
+  };
+
+  const sampleVariants = {
+    hidden: { x: -20, opacity: 0 },
+    visible: {
+      x: 0,
+      opacity: 1,
+      transition: {
+        type: "spring",
+        stiffness: 100
+      }
+    },
+    exit: { x: 20, opacity: 0 }
+  };
+
   return (
-    <div className="max-w-3xl mx-auto px-4 py-10">
-      <h2 className="text-2xl font-bold mb-6">Update Problem</h2>
-      <form onSubmit={handleSubmit} className="space-y-5">
-        {['title', 'description', 'inputFormat', 'outputFormat', 'constraints'].map(field => (
-          <div key={field}>
-            <label className="block font-medium mb-1 capitalize">{field}</label>
-            <textarea
-              name={field}
-              rows={field === 'description' ? 6 : 3}
-              value={formData[field]}
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="min-h-screen py-20 bg-[#07034d] px-4 sm:px-6 lg:px-8"
+    >
+      <div className="max-w-4xl mx-auto">
+        <motion.div
+          initial={{ y: -50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 100 }}
+          className="text-center mb-10"
+        >
+          <h2 className="text-4xl font-bold text-blue-300 mb-2">Update Problem</h2>
+          <p className="text-lg text-gray-200">Edit the problem details below</p>
+        </motion.div>
+
+        <motion.form 
+          onSubmit={handleSubmit} 
+          className="space-y-6 bg-white rounded-xl shadow-xl p-8"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          {['title', 'description', 'inputFormat', 'outputFormat', 'constraints'].map((field, i) => (
+            <motion.div key={field} variants={itemVariants} className="space-y-1">
+              <label className="block text-sm font-medium text-gray-700 capitalize">{field}</label>
+              <textarea
+                name={field}
+                rows={field === 'description' ? 6 : 3}
+                value={formData[field]}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+              />
+            </motion.div>
+          ))}
+
+          <motion.div variants={itemVariants} className="space-y-1">
+            <label className="block text-sm font-medium text-gray-700">Difficulty</label>
+            <select
+              name="difficulty"
+              value={formData.difficulty}
               onChange={handleChange}
               required
-              className="w-full border border-gray-300 rounded px-3 py-2"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+            >
+              <option>easy</option>
+              <option>medium</option>
+              <option>hard</option>
+            </select>
+          </motion.div>
+
+          <motion.div variants={itemVariants} className="space-y-4">
+            <label className="block text-lg font-semibold text-gray-800">Sample Test Cases</label>
+            <div className="space-y-4">
+              {samples.map((sample, index) => (
+                <motion.div
+                  key={index}
+                  variants={sampleVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  layout
+                  className="border border-gray-200 rounded-lg p-4 bg-gray-50 shadow-sm hover:shadow-md transition-shadow duration-200"
+                >
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Input {index + 1}</label>
+                      <textarea
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                        value={sample.input}
+                        onChange={(e) => handleSampleChange(index, 'input', e.target.value)}
+                        rows={3}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Output {index + 1}</label>
+                      <textarea
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                        value={sample.output}
+                        onChange={(e) => handleSampleChange(index, 'output', e.target.value)}
+                        rows={3}
+                        required
+                      />
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => removeSample(index)}
+                    className="mt-2 text-sm text-red-600 hover:text-red-800 font-medium transition-colors duration-200"
+                  >
+                    Remove Test Case
+                  </button>
+                </motion.div>
+              ))}
+            </div>
+            <motion.button
+              type="button"
+              onClick={addSample}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200 shadow-md"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
+              </svg>
+              Add Sample Test Case
+            </motion.button>
+          </motion.div>
+
+          <motion.div variants={itemVariants} className="space-y-1">
+            <label className="block text-sm font-medium text-gray-700">Tags (comma-separated)</label>
+            <input
+              type="text"
+              value={formData.tags.join(',')}
+              onChange={(e) => setFormData(prev => ({
+                ...prev,
+                tags: e.target.value.split(',').map(tag => tag.trim())
+              }))}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
             />
-          </div>
-        ))}
+          </motion.div>
 
-        <div>
-          <label className="block font-medium mb-1">Difficulty</label>
-          <select
-            name="difficulty"
-            value={formData.difficulty}
-            onChange={handleChange}
-            required
-            className="w-full border border-gray-300 rounded px-3 py-2"
-          >
-            <option>easy</option>
-            <option>medium</option>
-            <option>hard</option>
-          </select>
-        </div>
-
-        <div className="mb-4">
-          <label className="block font-semibold mb-2">Sample Test Cases</label>
-          {samples.map((sample, index) => (
-            <div key={index} className="mb-4 border border-gray-300 p-3 rounded-md">
-              <label className="block font-medium mb-1">Input {index + 1}</label>
-              <textarea
-                className="w-full p-2 border rounded mb-2"
-                value={sample.input}
-                onChange={(e) => handleSampleChange(index, 'input', e.target.value)}
-                rows={3}
-                required
-              />
-              <label className="block font-medium mb-1">Output {index + 1}</label>
-              <textarea
-                className="w-full p-2 border rounded"
-                value={sample.output}
-                onChange={(e) => handleSampleChange(index, 'output', e.target.value)}
-                rows={3}
-                required
-              />
-              <button
-                type="button"
-                onClick={() => removeSample(index)}
-                className="text-sm mt-2 text-red-500 hover:text-red-700"
-              >
-                Remove
-              </button>
+          <motion.div variants={itemVariants} className="space-y-3">
+            <label className="block text-sm font-medium text-gray-700">Existing Hidden Test Cases</label>
+            <div className="space-y-2">
+              {existingHiddenTests.map(test => (
+                <motion.div 
+                  key={test._id}
+                  whileHover={{ scale: 1.01 }}
+                  className="flex items-center justify-between p-3 border border-gray-200 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors duration-200"
+                >
+                  <span className="text-sm font-mono text-gray-700">
+                    {test.inputFilePath.split('/').pop()} ➝ {test.outputFilePath.split('/').pop()}
+                  </span>
+                  <label className="inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={retainTestIds.includes(test._id)}
+                      onChange={() => toggleRetainTest(test._id)}
+                      className="sr-only peer"
+                    />
+                    <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                  </label>
+                </motion.div>
+              ))}
             </div>
-          ))}
-          <button
-            type="button"
-            onClick={addSample}
-            className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-sm"
-          >
-            + Add Sample
-          </button>
-        </div>
+          </motion.div>
 
-        <div>
-          <label className="block font-medium mb-1">Tags (comma-separated)</label>
-          <input
-            type="text"
-            value={formData.tags.join(',')}
-            onChange={(e) => setFormData(prev => ({
-              ...prev,
-              tags: e.target.value.split(',').map(tag => tag.trim())
-            }))}
-            className="w-full border border-gray-300 rounded px-3 py-2"
-          />
-        </div>
-
-        <div>
-          <label className="block font-medium mb-1">Existing Hidden Test Cases</label>
-          {existingHiddenTests.map(test => (
-            <div key={test._id} className="flex items-center justify-between border p-2 rounded mb-2">
-              <span>{test.inputFilePath.split('/').pop()} ➝ {test.outputFilePath.split('/').pop()}</span>
-              <input
-                type="checkbox"
-                checked={retainTestIds.includes(test._id)}
-                onChange={() => toggleRetainTest(test._id)}
-              />
+          <motion.div variants={itemVariants} className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">Hidden Input Files</label>
+            <div className="flex items-center gap-4">
+              <label className="flex-1 cursor-pointer">
+                <input 
+                  type="file" 
+                  multiple 
+                  onChange={e => setInputFiles([...e.target.files])} 
+                  className="hidden"
+                />
+                <div className="px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all duration-200 text-center">
+                  <p className="text-sm text-gray-600">Click to select input files</p>
+                  {inputFiles.length > 0 && (
+                    <p className="text-xs mt-1 text-blue-600">{inputFiles.length} file(s) selected</p>
+                  )}
+                </div>
+              </label>
             </div>
-          ))}
-        </div>
+          </motion.div>
 
-        <div>
-          <label className="block font-medium mb-1">Hidden Input Files</label>
-          <input type="file" multiple onChange={e => setInputFiles([...e.target.files])} />
-        </div>
+          <motion.div variants={itemVariants} className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">Hidden Output Files</label>
+            <div className="flex items-center gap-4">
+              <label className="flex-1 cursor-pointer">
+                <input 
+                  type="file" 
+                  multiple 
+                  onChange={e => setOutputFiles([...e.target.files])} 
+                  className="hidden"
+                />
+                <div className="px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all duration-200 text-center">
+                  <p className="text-sm text-gray-600">Click to select output files</p>
+                  {outputFiles.length > 0 && (
+                    <p className="text-xs mt-1 text-blue-600">{outputFiles.length} file(s) selected</p>
+                  )}
+                </div>
+              </label>
+            </div>
+          </motion.div>
 
-        <div>
-          <label className="block font-medium mb-1">Hidden Output Files</label>
-          <input type="file" multiple onChange={e => setOutputFiles([...e.target.files])} />
-        </div>
-
-        <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-          Update Problem
-        </button>
-      </form>
-    </div>
+          <motion.div variants={itemVariants} className="pt-4">
+            <motion.button
+              type="submit"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg"
+            >
+              Update Problem
+            </motion.button>
+          </motion.div>
+        </motion.form>
+      </div>
+    </motion.div>
   );
 };
 

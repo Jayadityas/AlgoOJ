@@ -33,11 +33,12 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-800 via-purple-900 to-indigo-800 relative px-4 py-10">
+    <div className="min-h-screen flex items-center justify-center bg-[#07034d] relative px-4 py-10">
       {/* Glass Background Overlay */}
-      <div className="absolute inset-0 bg-white/20 backdrop-blur-md" />
+      <div className="absolute inset-0 backdrop-blur-md" />
 
-      <div className="relative z-10 w-full max-w-md bg-white/60 backdrop-blur-xl p-8 rounded-2xl shadow-2xl">
+      {/* Card */}
+      <div className="relative z-10 w-full max-w-md bg-white/90 backdrop-blur-xl p-8 rounded-2xl shadow-2xl">
         <h2 className="text-3xl font-bold text-center mb-6 text-gray-800 dark:text-white">
           Admin Login
         </h2>

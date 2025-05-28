@@ -39,7 +39,7 @@ export const executeCode = (code, language, input = '') => {
         runProcess.on('close', (code) => {
           fs.unlinkSync(filepath);
           if (fs.existsSync(exeFile)) fs.unlinkSync(exeFile);
-
+          console.log(code);
           if (code !== 0) {
             return resolve({ success: false, error: stderr || 'Runtime Error' });
           }

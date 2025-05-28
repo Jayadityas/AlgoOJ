@@ -7,6 +7,7 @@ import Login from './pages/Login.jsx';
 import CreateProblem from './pages/CreateProblem.jsx';
 import UpdateProblem from './pages/UpdateProblem.jsx';
 import ViewProblem from './pages/ViewProblem.jsx';
+import Myprofile from './pages/Myprofile.jsx';
 
 
 function App() {
@@ -20,7 +21,7 @@ function App() {
         <Route path='/create-problem' element={<CreateProblem/>} />
         <Route path='/update-problem/:id' element={<UpdateProblem/>} />
         <Route path='/view-problem/:id' element={<ViewProblem/>}/>
-        {/* <Route path='/my-profile' element={<Myprofile/>} /> */}
+        <Route path='/my-profile' element={<Myprofile/>} />
       </Routes>
 
       <Footer/>

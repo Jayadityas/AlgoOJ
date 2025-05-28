@@ -38,26 +38,28 @@ const LeaderBoard = () => {
   };
 
   return (
-    <div className="min-h-screen p-30 bg-[#07034d]">
+    <div className="min-h-screen px-4 py-25 bg-[#07034d]"> {/* use px-4 for mobile spacing */}
       <div className="max-w-5xl mx-auto">
         <h1 className="text-4xl font-extrabold text-center text-amber-400 mb-10 drop-shadow-lg">
           🏆 Leaderboard
         </h1>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"> {/* responsive grid */}
           {users.map((user, index) => (
             <div
               key={user._id}
-              className="bg-white shadow-xl rounded-xl p-6 flex items-center justify-between hover:scale-105 transition-transform duration-300"
+              className="bg-white shadow-xl rounded-xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4 hover:scale-105 transition-transform duration-300"
             >
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 w-full sm:w-auto">
                 {getRankIcon(index)}
                 <div>
                   <p className="text-lg font-semibold text-gray-800">{user.username}</p>
                   <p className="text-sm text-gray-500">Submissions: {user.submissionsCount}</p>
                 </div>
               </div>
-              <span className="text-sm font-medium text-blue-600">Rank #{index + 1}</span>
+              <span className="text-sm font-medium text-blue-600 sm:text-right w-full sm:w-auto">
+                Rank #{index + 1}
+              </span>
             </div>
           ))}
         </div>

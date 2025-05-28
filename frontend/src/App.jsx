@@ -10,6 +10,8 @@ import Navbar from './components/Navbar.jsx';
 import Footer from './components/Footer.jsx';
 import LeaderBoard from './pages/LeaderBoard.jsx';
 import ProblemPage from './pages/ProblemPage.jsx';
+import ForgotPassword from './pages/ForgotPassword.jsx';
+import ResetPassword from './pages/ResetPassword.jsx'
 
 
 function App() {
@@ -26,6 +28,8 @@ function App() {
         <Route path='/about' element={<About/>} /> 
         <Route path='/contact' element={<Contact/>} />
         <Route path='/my-profile' element={<Myprofile/>} />
+        <Route path='/forgot-password' element={<ForgotPassword/>} />
+        <Route path="/reset-password" element={<ResetPassword />} />
       </Routes>
 
       <Footer/>

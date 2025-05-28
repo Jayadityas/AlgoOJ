@@ -1,5 +1,6 @@
 import React from "react";
 import {NavLink, useNavigate} from 'react-router-dom'
+import { motion } from "framer-motion";
 
 const CallToAction = () => {
 
@@ -12,12 +13,15 @@ const CallToAction = () => {
       </h2>
       <br />
       <p className="mb-6 text-lg">Join <span className="text-purple-400">THE OJ</span> community and start solving real challenges today.</p>
-      <button
-        onClick={()=>navigate('/login')}
-        className="inline-block bg-white text-purple-600 font-semibold py-3 px-6 rounded-full shadow-lg hover:bg-gray-100 cursor-pointer transition"
-      >
-        Create Account
-      </button>
+      <motion.button
+        onClick={() => navigate('/problems')}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        className="px-8 py-3 rounded-full bg-transparent border-2 border-purple-400 text-white font-semibold text-lg hover:bg-purple-500/20 transition-all duration-300 relative overflow-hidden group  hover:border-white animate-borderMove"
+        >
+        <span className="relative z-10">Create Account</span>
+        <span className="absolute inset-0 bg-gradient-to-r from-purple-400/20 to-pink-300/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300  border-transparent hover:border-white animate-borderMove"></span>
+        </motion.button>
     </div>
   );
 };

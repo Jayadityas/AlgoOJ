@@ -3,6 +3,7 @@ import validator from 'validator'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import cloudinary from '../config/cloudinary.js'
+import sendEmail from '../service/sendEmail.js'
 
 
 const registerUser = async (req, res) => {
@@ -156,5 +157,46 @@ const updateUserProfile = async (req, res) => {
 };
 
 
+const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: 'User not found' });
 
-export { registerUser , loginUser , getUserProfile , updateUserProfile}
+    const token = jwt.sign({ userId: user._id }, process.env.RESET_PASSWORD_SECRET, { expiresIn: '10m' });
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+
+    await sendEmail(email, 'Password Reset', `
+      <h2>Password Reset</h2>
+      <p>Click the link below to reset your password:</p>
+      <a href="${resetLink}" style="color:blue;">Reset Password</a>
+      <p>Or copy and paste this URL into your browser:</p>
+      <p>${resetLink}</p>
+    `);
+
+    res.status(200).json({success:true , message: 'Reset email sent!' });
+  } catch (err) {
+    res.status(500).json({success:false , message: 'Server error' });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  const { token, password } = req.body;
+  try {
+    const decoded = jwt.verify(token, process.env.RESET_PASSWORD_SECRET);
+    const user = await User.findById(decoded.userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const hashed = await bcrypt.hash(password, 10);
+    user.password = hashed;
+    await user.save();
+
+    res.json({success:true , message: 'Password reset successful' });
+  } catch (err) {
+    res.status(400).json({success:false , message: 'Invalid or expired token' });
+  }
+};
+
+
+
+export { registerUser , loginUser , getUserProfile , updateUserProfile , forgotPassword , resetPassword}
