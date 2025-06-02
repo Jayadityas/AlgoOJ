@@ -33,6 +33,7 @@ app.post('/', async (req, res) => {
         executionTime,
       });
     } else {
+        console.error('Execution error:', result.error);
       return res.json({
         success: false,
         error: result.error || 'Execution failed',

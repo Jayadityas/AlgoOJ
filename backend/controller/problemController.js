@@ -1,68 +1,112 @@
 import Problem from "../model/problemModel.js"
 import fs from 'fs'
-import path from "path"
+import AdmZip from 'adm-zip'
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 
 const createProblem = async (req, res) => {
-
-    try {
-
-        const {role} = req.user
-        // console.log(role)
-        if(role === 'admin') {
-            // console.log('Admin creating problem')
-            const { title, description, inputFormat, outputFormat, constraints, samples, difficulty, tags } = req.body;
-            
-            // Validating the input
-            if (!title || !description || !inputFormat || !outputFormat || !constraints || !samples || !difficulty) {
-                return res.status(400).json({ success: false, message: 'Please fill all the fields!' });
-            }
-
-            // Check if the problem already exists
-            const existingProblem = await Problem.findOne({ title });
-            if (existingProblem) {
-                return res.status(400).json({ success: false, message: 'Problem already exists!' });
-            }
-
-            const { inputFiles, outputFiles } = req.files;
-
-            console.log('Input Files:', inputFiles);
-            console.log('Output Files:', outputFiles);
-
-            if (!inputFiles || !outputFiles || inputFiles.length !== outputFiles.length) {
-            return res.status(400).json({ error: "Input and output files must be provided in matching pairs." });
-            }
-
-            const hiddenTests = inputFiles.map((inputFile, index) => ({
-                inputFilePath: inputFile.path,
-                outputFilePath: outputFiles[index]?.path,
-            }));
-
-            // Create a new problem
-            const newProblem = new Problem({
-                title,
-                description,
-                inputFormat,
-                outputFormat,
-                constraints,
-                samples:JSON.parse(samples),
-                difficulty,
-                tags:tags ? JSON.parse(tags) : [],
-                hiddenTests,
-            });
-
-            const savedProblem = await newProblem.save();
-            res.status(201).json({ success: true, message: 'Problem created successfully!'})
-
-        }
-        else {
-            return res.status(403).json({ success: false, message: 'You are not authorized to create a problem!' })
-        }
+  try {
+    const { role } = req.user;
+    if (role !== 'admin') {
+      return res.status(403).json({ success: false, message: 'You are not authorized to create a problem!' });
     }
-    catch (error) {
-        console.error('Error creating problem:', error)
-        res.status(500).json({ success: false, message: 'Problem creation failed!' })
+
+    const { title, description, inputFormat, outputFormat, constraints, samples, difficulty, tags } = req.body;
+
+    if (!title || !description || !inputFormat || !outputFormat || !constraints || !samples || !difficulty) {
+      return res.status(400).json({ success: false, message: 'Please fill all the fields!' });
     }
-}
+
+    const existingProblem = await Problem.findOne({ title });
+    if (existingProblem) {
+      return res.status(400).json({ success: false, message: 'Problem already exists!' });
+    }
+
+    let hiddenTests = [];
+
+    // ✅ Handle zipFile with nested folder
+    if (req.files?.zipFile) {
+      const zipFile = req.files.zipFile[0];
+      const zip = new AdmZip(zipFile.path);
+
+      const extractFolder = `uploads/${Date.now()}_${title.replace(/\s+/g, '_')}`;
+      const extractPath = path.join(process.cwd(), extractFolder);
+      fs.mkdirSync(extractPath, { recursive: true });
+
+      zip.extractAllTo(extractPath, true);
+
+      // 🔍 Recursively get input*.txt and output*.txt from all subfolders
+      const walkSync = (dir, fileList = []) => {
+        const files = fs.readdirSync(dir);
+        for (const file of files) {
+          const filepath = path.join(dir, file);
+          const stat = fs.statSync(filepath);
+          if (stat.isDirectory()) {
+            walkSync(filepath, fileList);
+          } else {
+            fileList.push(filepath);
+          }
+        }
+        return fileList;
+      };
+
+      const allExtractedFiles = walkSync(extractPath);
+      const inputFiles = allExtractedFiles.filter(f => path.basename(f).startsWith('input') && f.endsWith('.txt')).sort();
+      const outputFiles = allExtractedFiles.filter(f => path.basename(f).startsWith('output') && f.endsWith('.txt')).sort();
+
+      if (inputFiles.length !== outputFiles.length) {
+        return res.status(400).json({ success: false, message: 'Number of input and output files in ZIP must match.' });
+      }
+
+      hiddenTests = inputFiles.map((inputPath, idx) => ({
+        inputFilePath: path.relative(process.cwd(), inputPath).replace(/\\/g, '/'), // ✅ save relative paths
+        outputFilePath: path.relative(process.cwd(), outputFiles[idx]).replace(/\\/g, '/'),
+      }));
+    }
+
+    // Fallback to input/output files (if no zip)
+    else if (req.files?.inputFiles && req.files?.outputFiles) {
+      const { inputFiles, outputFiles } = req.files;
+
+      if (inputFiles.length !== outputFiles.length) {
+        return res.status(400).json({ success: false, message: "Input and output files must be provided in matching pairs." });
+      }
+
+      hiddenTests = inputFiles.map((inputFile, index) => ({
+        inputFilePath: inputFile.path.replace(/\\/g, '/'),
+        outputFilePath: outputFiles[index]?.path.replace(/\\/g, '/'),
+      }));
+    }
+
+    if (!hiddenTests.length) {
+      return res.status(400).json({ success: false, message: 'No test cases found in upload.' });
+    }
+
+    const newProblem = new Problem({
+      title,
+      description,
+      inputFormat,
+      outputFormat,
+      constraints,
+      samples: JSON.parse(samples),
+      difficulty,
+      tags: tags ? JSON.parse(tags) : [],
+      hiddenTests,
+    });
+
+    await newProblem.save();
+    return res.status(201).json({ success: true, message: 'Problem created successfully!' });
+
+  } catch (error) {
+    console.error('Error creating problem:', error);
+    res.status(500).json({ success: false, message: 'Problem creation failed!' });
+  }
+};
+
 
 const getAllProblems = async (req, res) => {
 
@@ -107,6 +151,7 @@ const getProblemById = async (req, res) => {
 
 const updateProblem = async (req, res) => {
   try {
+    // console.log(req.files);
     const { id } = req.params;
     const { role } = req.user;
 
@@ -117,7 +162,7 @@ const updateProblem = async (req, res) => {
     const updateData = {};
 
     try {
-      console.log(req.body.samples)
+      console.log(req.body.tags);
       updateData.samples = JSON.parse(req.body.samples || '[]');
       updateData.tags = JSON.parse(req.body.tags || '[]');
     } catch (err) {
@@ -145,25 +190,89 @@ const updateProblem = async (req, res) => {
     const existingTests = problem.hiddenTests || [];
     const retainedTestCases = existingTests.filter(test => retainedTests.includes(String(test._id)));
 
+    // Handle file uploads (both individual files and ZIP)
     const inputFiles = req.files?.inputFiles || [];
     const outputFiles = req.files?.outputFiles || [];
-
-    if (inputFiles.length !== outputFiles.length) {
-      return res.status(400).json({ success: false, message: 'Input/Output file count mismatch' });
-    }
+    const zipFile = req.files?.zipFile?.[0];
 
     const newHiddenTests = [];
-    for (let i = 0; i < inputFiles.length; i++) {
-      newHiddenTests.push({
-        inputFilePath: inputFiles[i].path,
-        outputFilePath: outputFiles[i].path
+
+    if (zipFile) {
+      const zip = new AdmZip(zipFile.path);
+      const zipEntries = zip.getEntries();
+
+      const testPairs = {};
+
+      // Temp directory to save extracted files (ensure it exists)
+      const uploadDir = 'uploads/';
+
+      // Make sure upload dir exists
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+      }
+
+      zipEntries.forEach(entry => {
+        if (entry.isDirectory) return;
+
+        // Extract only files at any folder depth, grab the base filename
+        const name = entry.entryName.toLowerCase().split('/').pop();
+        const match = name.match(/(input|output)(\d+)\.txt$/i);
+
+        if (match) {
+          const [_, type, num] = match;
+          if (!testPairs[num]) testPairs[num] = {};
+
+          // Generate unique filename to avoid conflicts
+          const uniqueFilename = `${Date.now()}-${name}`;
+
+          // Save extracted file to disk
+          const filePath = path.join(uploadDir, uniqueFilename);
+          fs.writeFileSync(filePath, entry.getData());
+
+          // Store path relative to project root or as you prefer
+          testPairs[num][type + 'FilePath'] = filePath;
+        }
       });
+
+      // Now create hiddenTests array with paths, only if both input/output exist
+      Object.values(testPairs).forEach(pair => {
+        if (pair.inputFilePath && pair.outputFilePath) {
+          newHiddenTests.push({
+            inputFilePath: pair.inputFilePath,
+            outputFilePath: pair.outputFilePath,
+          });
+        }
+      });
+
+      // Remove the uploaded ZIP file after extraction
+      fs.unlinkSync(zipFile.path);
+    }
+
+
+    // Process individual files if no ZIP
+    else {
+      if (inputFiles.length !== outputFiles.length) {
+        return res.status(400).json({ success: false, message: 'Input/Output file count mismatch' });
+      }
+
+      for (let i = 0; i < inputFiles.length; i++) {
+        newHiddenTests.push({
+          input: fs.readFileSync(inputFiles[i].path, 'utf8'),
+          output: fs.readFileSync(outputFiles[i].path, 'utf8')
+        });
+        // Clean up individual files
+        fs.unlinkSync(inputFiles[i].path);
+        fs.unlinkSync(outputFiles[i].path);
+      }
     }
 
     updateData.hiddenTests = [...retainedTestCases, ...newHiddenTests];
 
-    const updatedProblem = await Problem.findByIdAndUpdate(id,{ $set: updateData },{ new: true });
-
+    const updatedProblem = await Problem.findByIdAndUpdate(
+      id,
+      { $set: updateData },
+      { new: true }
+    );
 
     return res.status(200).json({
       success: true,

@@ -96,7 +96,7 @@ const Myprofile = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="min-h-screen bg-gradient-to-br from-[#07034d] to-[#1e0750] px-4 py-10"
+      className="min-h-screen bg-gradient-to-br from-[#07034d] to-[#1e0750] px-4 py-20"
     >
       {/* Floating background elements */}
       <div className="absolute inset-0 overflow-hidden">
@@ -110,7 +110,7 @@ const Myprofile = () => {
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.6 }}
-          className="text-4xl md:text-5xl font-extrabold text-center py-8 text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-amber-500"
+          className="text-3xl md:text-4xl font-bold text-center py-8 text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-amber-500"
         >
           My Profile
         </motion.h1>

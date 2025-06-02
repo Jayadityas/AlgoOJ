@@ -3,7 +3,7 @@ import User from '../model/userModel.js'
 const getLeaderboard = async (req, res) => {
   try {
     const users = await User.find({})
-    .select('username submissionsCount')
+    .select('username submissionsCount profileImage')
     .lean();
 
     console.log(users)

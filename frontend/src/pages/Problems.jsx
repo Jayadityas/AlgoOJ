@@ -1,24 +1,47 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { AppContext } from '../context/AppContext';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { FiFilter, FiX, FiChevronDown, FiChevronUp, FiCheck } from 'react-icons/fi';
+
+const DSATags = [
+  'Array', 'String', 'Hash Table', 'Math', 'Dynamic Programming', 
+  'Sorting', 'Greedy', 'DFS', 'Binary Search', 'BFS',
+  'Tree', 'Graph', 'Linked List', 'Recursion', 'Stack', 'Queue',
+  'Matrix', 'Heap', 'Sliding Window', 'Union Find', 'Trie'
+];
 
 const Problems = () => {
   const { problems, token } = useContext(AppContext);
   const navigate = useNavigate();
+  const [selectedDifficulty, setSelectedDifficulty] = useState(null);
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [isTagsDropdownOpen, setIsTagsDropdownOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const getTagColor = (difficulty) => {
     switch (difficulty) {
-      case 'easy':
-        return 'bg-emerald-100 text-emerald-800 border-emerald-300';
-      case 'medium':
-        return 'bg-amber-100 text-amber-800 border-amber-300';
-      case 'hard':
-        return 'bg-rose-100 text-rose-800 border-rose-300';
-      default:
-        return 'bg-gray-100 text-gray-800 border-gray-300';
+      case 'easy': return 'bg-emerald-100 text-emerald-800 border-emerald-300';
+      case 'medium': return 'bg-amber-100 text-amber-800 border-amber-300';
+      case 'hard': return 'bg-rose-100 text-rose-800 border-rose-300';
+      default: return 'bg-gray-100 text-gray-800 border-gray-300';
     }
   };
+
+  const toggleTag = (tag) => {
+    setSelectedTags(prev => 
+      prev.includes(tag) 
+        ? prev.filter(t => t !== tag) 
+        : [...prev, tag]
+    );
+  };
+
+  const filteredProblems = problems?.filter(problem => {
+    const matchesDifficulty = !selectedDifficulty || problem.difficulty === selectedDifficulty;
+    const matchesTags = selectedTags.length === 0 || 
+      problem.tags.some(tag => selectedTags.includes(tag));
+    return matchesDifficulty && matchesTags;
+  });
 
   const onSolveHandler = (id) => {
     if (token) {
@@ -28,111 +51,227 @@ const Problems = () => {
     }
   };
 
+  const resetFilters = () => {
+    setSelectedDifficulty(null);
+    setSelectedTags([]);
+    setIsTagsDropdownOpen(false);
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#07034d] to-[#1e0750] py-25 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto"> {/* Reduced container width */}
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-3xl font-extrabold text-amber-400 sm:text-4xl mb-3">
-            Coding Challenges
-          </h1>
-          <p className="text-lg text-indigo-200">
-            Sharpen your skills with our curated problems
-          </p>
+    <div className="min-h-screen bg-gradient-to-br from-[#07034d] to-[#1e0750] py-30 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto flex flex-col md:flex-row">
+        {/* Mobile Filter Button */}
+        <div className="md:hidden mb-4">
+          <button
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            className="flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg px-4 py-2 text-sm text-amber-400"
+          >
+            <FiFilter /> {isSidebarOpen ? 'Hide' : 'Show'} Filters
+          </button>
         </div>
 
-        {/* Problems List */}
-        <div className="space-y-4"> {/* Reduced spacing between cards */}
-          {problems && problems.length > 0 ? (
-            problems.map((problem, index) => (
-              <div
-                key={problem._id}
-                className={`transform transition-all duration-300 hover:scale-[1.02] hover:shadow-xl ${
-                  index % 2 === 0 
-                    ? 'bg-white' 
-                    : 'bg-gray-50'
-                } rounded-lg shadow-sm overflow-hidden border border-gray-200`}
-              >
-                <div className="p-4 sm:p-5"> {/* Reduced padding */}
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    {/* Problem Info */}
-                    <div className="flex-1 min-w-0"> {/* Added min-w-0 to prevent overflow */}
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${getTagColor(problem.difficulty)}`}>
-                          {problem.difficulty.charAt(0).toUpperCase() + problem.difficulty.slice(1)}
-                        </span>
-                        <h2 className="text-lg font-bold text-gray-800 truncate">
-                          {problem.title}
-                        </h2>
+        {/* Filter Sidebar */}
+        {(isSidebarOpen || window.innerWidth >= 768) && (
+          <div className="w-full md:w-56 flex-shrink-0 md:mr-6 mb-6 md:mb-0">
+            <div className="bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 p-2 mt-15">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-sm font-bold text-amber-400 flex items-center gap-2">
+                  <FiFilter /> Filters
+                </h2>
+                {(selectedDifficulty || selectedTags.length > 0) && (
+                  <button 
+                    onClick={resetFilters}
+                    className="text-xs text-indigo-300 hover:text-white"
+                  >
+                    <FiX size={14} />
+                  </button>
+                )}
+              </div>
+
+              {/* Difficulty Filter */}
+              <div className="mb-4">
+                <h3 className="text-xs font-semibold text-indigo-200 mb-2">DIFFICULTY</h3>
+                <div className="space-y-2">
+                  {['easy', 'medium', 'hard'].map(difficulty => (
+                    <button
+                      key={difficulty}
+                      onClick={() => setSelectedDifficulty(
+                        selectedDifficulty === difficulty ? null : difficulty
+                      )}
+                      className={`w-full text-xs font-medium px-3 py-1 rounded-full border transition-all ${
+                        selectedDifficulty === difficulty 
+                          ? getTagColor(difficulty) + ' shadow-md'
+                          : 'bg-gray-800/50 text-gray-300 border-gray-600 hover:bg-gray-700/50'
+                      }`}
+                    >
+                      {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Tags Filter */}
+              <div>
+                <h3 className="text-xs font-semibold text-indigo-200 mb-2">TOPICS</h3>
+                <div className="relative">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsTagsDropdownOpen(!isTagsDropdownOpen);
+                    }}
+                    className="w-full flex items-center justify-between bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 border border-gray-600 rounded-lg px-3 py-1.5 text-xs transition-colors"
+                  >
+                    <span className="truncate">
+                      {selectedTags.length > 0 
+                        ? `${selectedTags.length} selected` 
+                        : "All Topics"}
+                    </span>
+                    {isTagsDropdownOpen ? <FiChevronUp size={14} /> : <FiChevronDown size={14} />}
+                  </button>
+
+                  {isTagsDropdownOpen && (
+                    <div 
+                      className="absolute z-20 mt-1 w-full bg-gray-800 border border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div className="p-2">
+                        <input 
+                          type="text" 
+                          placeholder="Search topics..."
+                          className="w-full bg-gray-700/50 border border-gray-600 rounded px-2 py-1 text-xs text-white mb-1"
+                        />
                       </div>
-                      
-                      <div className="flex flex-wrap gap-1.5 mt-1.5">
-                        {problem.tags.map((tag, index) => (
-                          <span
-                            key={index}
-                            className="text-xs font-medium px-2 py-0.5 bg-indigo-100 text-indigo-800 rounded-full"
+                      <div className="space-y-1 p-1">
+                        {DSATags.map(tag => (
+                          <div 
+                            key={tag}
+                            onClick={() => toggleTag(tag)}
+                            className="flex items-center px-2 py-1 hover:bg-gray-700/50 cursor-pointer transition-colors rounded text-xs"
                           >
-                            {tag}
-                          </span>
+                            <div className={`w-3 h-3 rounded-sm border mr-2 flex items-center justify-center ${
+                              selectedTags.includes(tag) 
+                                ? 'bg-indigo-500 border-indigo-500' 
+                                : 'border-gray-500'
+                            }`}>
+                              {selectedTags.includes(tag) && <FiCheck size={10} className="text-white" />}
+                            </div>
+                            <span className="text-gray-200 truncate">{tag}</span>
+                          </div>
                         ))}
                       </div>
                     </div>
+                  )}
+                </div>
 
-                    {/* Solve Button */}
-                    <button
-                      onClick={() => onSolveHandler(problem._id)}
-                      className="group relative inline-flex items-center justify-center px-4 py-2 overflow-hidden font-medium text-indigo-600 transition duration-300 ease-out rounded-full shadow hover:ring-1 hover:ring-indigo-500 text-sm"
-                    >
-                      <span className="absolute inset-0 w-full h-full bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600"></span>
-                      <span className="absolute bottom-0 right-0 block w-48 h-48 mb-24 mr-3 transition duration-500 origin-bottom-left transform rotate-45 translate-x-18 bg-indigo-600 rounded-full opacity-30 group-hover:rotate-90 ease"></span>
-                      <span className="relative text-white flex items-center">
-                        Solve
-                        <svg
-                          className="w-3 h-3 ml-1"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          xmlns="http://www.w3.org/2000/svg"
+                {/* Selected Tags */}
+                {selectedTags.length > 0 && (
+                  <div className="mt-2 flex flex-wrap gap-1">
+                    {selectedTags.map(tag => (
+                      <span 
+                        key={tag}
+                        className="text-[0.65rem] font-medium px-1.5 py-0.5 bg-indigo-500/20 text-indigo-200 border border-indigo-400/30 rounded-full flex items-center"
+                      >
+                        {tag}
+                        <button 
+                          onClick={() => toggleTag(tag)}
+                          className="ml-0.5 hover:text-white"
                         >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M14 5l7 7m0 0l-7 7m7-7H3"
-                          ></path>
-                        </svg>
+                          <FiX size={10} />
+                        </button>
                       </span>
-                    </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Main Content */}
+        <div className="flex-1">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <h1 className="text-2xl font-extrabold text-amber-400 sm:text-3xl mb-2">
+              Coding Challenges
+            </h1>
+            <p className="text-sm text-indigo-200">
+              Sharpen your skills with our curated problems
+            </p>
+          </div>
+
+          {/* Problems List with increased vertical spacing */}
+          <div className="space-y-3">
+            {filteredProblems && filteredProblems.length > 0 ? (
+              filteredProblems.map((problem, index) => (
+                <div
+                  key={problem._id}
+                  className={`transition-all duration-200 hover:shadow-md ${
+                    index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
+                  } rounded-lg shadow-sm overflow-hidden border border-gray-200 md:mr-15 md:ml-25`}
+                >
+                  <div className="p-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5 mb-1">
+                          <span className={`text-[0.65rem] font-semibold px-1.5 py-0.5 rounded-full border ${getTagColor(problem.difficulty)}`}>
+                            {problem.difficulty.charAt(0).toUpperCase() + problem.difficulty.slice(1)}
+                          </span>
+                          <h2 className="text-sm font-bold text-gray-800 truncate">
+                            {problem.title}
+                          </h2>
+                        </div>
+                        
+                        <div className="flex flex-wrap gap-1">
+                          {problem.tags.slice(0, 3).map((tag, i) => (
+                            <span
+                              key={i}
+                              className="text-[0.6rem] font-medium px-1.5 py-0.5 bg-indigo-100 text-indigo-800 rounded-full"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={() => onSolveHandler(problem._id)}
+                        className="flex-shrink-0 text-xs font-medium px-3 py-1 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-full shadow hover:shadow-md transition"
+                      >
+                        Solve
+                      </button>
+                    </div>
                   </div>
                 </div>
+              ))
+            ) : (
+              <div className="text-center py-8 bg-white/5 rounded-lg border border-white/10">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-indigo-100/10 rounded-full mb-2">
+                  <svg
+                    className="w-6 h-6 text-indigo-300"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    ></path>
+                  </svg>
+                </div>
+                <h3 className="text-base font-medium text-white mb-1">
+                  No problems found
+                </h3>
+                <p className="text-indigo-200 text-xs">
+                  {selectedDifficulty || selectedTags.length > 0
+                    ? "Try adjusting your filters" 
+                    : "Check back later for new challenges"}
+                </p>
               </div>
-            ))
-          ) : (
-            <div className="text-center py-10">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-indigo-100 rounded-full mb-3">
-                <svg
-                  className="w-8 h-8 text-indigo-500"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  ></path>
-                </svg>
-              </div>
-              <h3 className="text-lg font-medium text-white mb-1">
-                No problems found
-              </h3>
-              <p className="text-indigo-200 text-sm">
-                Check back later for new challenges
-              </p>
-            </div>
-          )}
+            )}  
+          </div>
         </div>
       </div>
     </div>

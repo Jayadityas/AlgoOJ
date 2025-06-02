@@ -2,7 +2,6 @@ import Submission from '../model/submissionModel.js';
 import Problem from '../model/problemModel.js';
 import User from '../model/userModel.js';
 import fs from 'fs/promises';
-import path from 'path';
 import axios from 'axios';  
 
 const COMPILER_SERVICE_URL = process.env.COMPILER_SERVICE_URL;
@@ -23,13 +22,13 @@ const submitCode = async (req, res) => {
     let allPassed = true;
     let totalExecutionTime = 0;
 
+    let failedTestCaseDetails = null; // Store info for frontend
+
     for (const testCase of problem.hiddenTests) {
       try {
-
         const inputData = await fs.readFile(testCase.inputFilePath, 'utf-8');
         const expectedOutput = await fs.readFile(testCase.outputFilePath, 'utf-8');
 
-        // Call compiler service API instead of local executeCode
         const response = await axios.post(COMPILER_SERVICE_URL, {
           code,
           language,
@@ -49,6 +48,13 @@ const submitCode = async (req, res) => {
         if ((result.output || '').trim() !== (expectedOutput || '').trim()) {
           verdict = 'Wrong Answer';
           output = result.output;
+
+          failedTestCaseDetails = {
+            input: inputData.trim(),
+            expectedOutput: expectedOutput.trim(),
+            actualOutput: result.output.trim(),
+          };
+
           allPassed = false;
           break;
         }
@@ -61,7 +67,6 @@ const submitCode = async (req, res) => {
       }
     }
 
-    // Update user stats
     if (allPassed) {
       verdict = 'Accepted';
       output = 'All test cases passed!';
@@ -89,6 +94,7 @@ const submitCode = async (req, res) => {
       output,
       executionTime: totalExecutionTime,
       submissionId: submission._id,
+      ...(failedTestCaseDetails && { failedTestCase: failedTestCaseDetails })
     });
   } catch (err) {
     console.error(err);
@@ -102,14 +108,18 @@ const runCode = async (req, res) => {
 
   try {
     const problem = await Problem.findById(problemId);
-    if (!problem) return res.status(404).json({ message: 'Problem not found' });
+    if (!problem) {
+      return res.status(404).json({ message: 'Problem not found' });
+    }
 
+    // Default to first sample
     const sampleInput = problem.samples[0]?.input || '';
     const expectedOutput = problem.samples[0]?.output || '';
 
-    const actualInput = input !== undefined && input !== null ? input : sampleInput;
+    const isCustomInput = input !== undefined && input !== null;
+    const actualInput = isCustomInput ? input : sampleInput;
+    const actualExpectedOutput = isCustomInput ? undefined : expectedOutput;
 
-    // Call compiler service API instead of local executeCode
     const response = await axios.post(COMPILER_SERVICE_URL, {
       code,
       language,
@@ -117,28 +127,54 @@ const runCode = async (req, res) => {
     });
 
     const result = response.data;
-    console.log(result);
 
-    let verdict = 'Correct Answer';
+    const actualOutput = result.output?.trim() || result.error?.trim();
+    const expected = actualExpectedOutput?.trim();
+    const inputUsed = actualInput.trim();
+
+    let verdict = '';
+    let passed = false;
+
     if (!result.success) {
       verdict = 'Compilation Error';
-    } else if (!input && expectedOutput && result.output.trim() !== expectedOutput.trim()) {
+    } else if (!isCustomInput && expected && actualOutput !== expected) {
       verdict = 'Wrong Answer';
-    } else if (input) {
-      verdict = 'Executed';
+    } else if (!isCustomInput && expected && actualOutput === expected) {
+      verdict = 'Correct Answer';
+      passed = true;
+    } else {
+      verdict = 'Executed'; // For custom input
     }
 
-    return res.json({
-      message: 'Code executed',
+    return res.status(200).json({
       verdict,
       output: result.output || result.error,
-      expected: input ? undefined : expectedOutput,
       executionTime: result.executionTime,
+      memoryUsage: result.memoryUsage,
+      failedTestCase: {
+        input: inputUsed,
+        expectedOutput: expected || '',
+        actualOutput,
+        passed
+      },
     });
+
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: 'Code execution failed' });
+    return res.status(500).json({
+      verdict: 'Server Error',
+      message: 'Code execution failed',
+      failedTestCase: {
+        input: input || '',
+        expectedOutput: '',
+        actualOutput: err.message,
+        passed: false
+      }
+    });
   }
 };
+
+
+
 
 export { submitCode, runCode };
