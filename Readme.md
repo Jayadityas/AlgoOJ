@@ -57,7 +57,7 @@ THE OJ is a full-stack **Online Judge system** that allows users to solve coding
 
 | Layer        | Technology                                      |
 |--------------|-------------------------------------------------|
-| Frontend     | React.js (Vite), Tailwind CSS, CodeMirror       |
+| Frontend     | React.js (Vite), Tailwind CSS, Monacco Editor   |
 | Backend      | Node.js, Express.js                             |
 | Database     | MongoDB (Mongoose)                              |
 | Code Runner  | Docker                                          |
