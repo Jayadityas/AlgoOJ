@@ -36,7 +36,13 @@ const userSchema = new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Problem'
     }
-  ]
+  ],
+  bookmarks: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Problem'
+    }
+  ],
 });
 
 const User = mongoose.model('User', userSchema);

@@ -1,8 +1,9 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { AppContext } from '../context/AppContext';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { FiFilter, FiX, FiChevronDown, FiChevronUp, FiCheck } from 'react-icons/fi';
+import axios from 'axios';
+import { FiFilter, FiX, FiChevronDown, FiChevronUp, FiCheck, FiBookmark } from 'react-icons/fi';
 
 const DSATags = [
   'Array', 'String', 'Hash Table', 'Math', 'Dynamic Programming', 
@@ -12,12 +13,46 @@ const DSATags = [
 ];
 
 const Problems = () => {
-  const { problems, token } = useContext(AppContext);
+  const { problems, token, backendUrl, user } = useContext(AppContext);
   const navigate = useNavigate();
   const [selectedDifficulty, setSelectedDifficulty] = useState(null);
   const [selectedTags, setSelectedTags] = useState([]);
   const [isTagsDropdownOpen, setIsTagsDropdownOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [bookmarkingProblem, setBookmarkingProblem] = useState(null);
+
+  // Fix filter visibility on load and handle initial loading
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setIsSidebarOpen(true);
+      } else {
+        setIsSidebarOpen(false);
+      }
+    };
+
+    // Set initial state
+    handleResize();
+    
+    // Add event listener
+    window.addEventListener('resize', handleResize);
+    
+    // Cleanup
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Handle loading state based on problems data
+  useEffect(() => {
+    if (problems !== undefined) {
+      // Add a small delay to show the loading state
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+      }, 800);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [problems]);
 
   const getTagColor = (difficulty) => {
     switch (difficulty) {
@@ -51,11 +86,66 @@ const Problems = () => {
     }
   };
 
+  // Bookmark functionality
+  const handleBookmark = async (problemId) => {
+    if (!token) {
+      toast.error('Please login to bookmark problems');
+      return;
+    }
+
+    setBookmarkingProblem(problemId);
+    
+    try {
+      const isBookmarked = user?.bookmarks?.includes(problemId);
+      const endpoint = isBookmarked ? 'remove-bookmark' : 'add-bookmark';
+      
+      const response = await axios.post(
+        `${backendUrl}/api/user/bookmark`,
+        { problemId },
+        { headers: { token } }
+      );
+
+      if (response.data.success) {
+        toast.success(isBookmarked ? 'Bookmark removed' : 'Problem bookmarked');
+      } else {
+        toast.error(response.data.message || 'Failed to update bookmark');
+      }
+    } catch (error) {
+      console.error('Bookmark error:', error);
+      toast.error('Failed to update bookmark');
+    } finally {
+      setBookmarkingProblem(null);
+    }
+  };
+
   const resetFilters = () => {
     setSelectedDifficulty(null);
     setSelectedTags([]);
     setIsTagsDropdownOpen(false);
   };
+
+  // Loading Screen Component - Same as other pages
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-[#07034d] to-[#1e0750] flex items-center justify-center">
+        <div className="text-center">
+          {/* Golden Spinning Circle */}
+          <div className="w-16 h-16 border-4 border-yellow-400/30 border-t-yellow-400 rounded-full animate-spin mx-auto mb-4"></div>
+          
+          {/* Loading Text */}
+          <h2 className="text-xl font-semibold text-amber-400 mb-2">Loading Challenges</h2>
+          <p className="text-indigo-200 text-sm">Please wait while we fetch the latest coding problems...</p>
+          
+          {/* Optional: Animated dots */}
+          <div className="flex justify-center mt-4 space-x-1">
+            <div className="w-2 h-2 bg-yellow-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+            <div className="w-2 h-2 bg-yellow-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+            <div className="w-2 h-2 bg-yellow-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#07034d] to-[#1e0750] py-30 px-4 sm:px-6 lg:px-8">
@@ -71,9 +161,9 @@ const Problems = () => {
         </div>
 
         {/* Filter Sidebar */}
-        {(isSidebarOpen || window.innerWidth >= 768) && (
+        {isSidebarOpen && (
           <div className="w-full md:w-56 flex-shrink-0 md:mr-6 mb-6 md:mb-0">
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 p-2 mt-15">
+            <div className="bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 p-2 md:mt-25">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-sm font-bold text-amber-400 flex items-center gap-2">
                   <FiFilter /> Filters
@@ -233,12 +323,38 @@ const Problems = () => {
                         </div>
                       </div>
 
-                      <button
-                        onClick={() => onSolveHandler(problem._id)}
-                        className="flex-shrink-0 text-xs font-medium px-3 py-1 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-full shadow hover:shadow-md transition"
-                      >
-                        Solve
-                      </button>
+                      <div className="flex items-center space-x-2">
+                        {/* Bookmark Button - Only show if user is logged in */}
+                        {token && (
+                          <button
+                            onClick={() => handleBookmark(problem._id)}
+                            disabled={bookmarkingProblem === problem._id}
+                            className={`p-2 rounded-full transition-all duration-200 ${
+                              user?.bookmarks?.includes(problem._id)
+                                ? 'bg-yellow-500 text-white shadow-md'
+                                : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                            } ${bookmarkingProblem === problem._id ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            title={user?.bookmarks?.includes(problem._id) ? 'Remove bookmark' : 'Add bookmark'}
+                          >
+                            {bookmarkingProblem === problem._id ? (
+                              <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                            ) : (
+                              <FiBookmark 
+                                size={16} 
+                                fill={user?.bookmarks?.includes(problem._id) ? 'currentColor' : 'none'} 
+                              />
+                            )}
+                          </button>
+                        )}
+
+                        {/* Solve Button */}
+                        <button
+                          onClick={() => onSolveHandler(problem._id)}
+                          className="flex-shrink-0 text-xs font-medium px-3 py-1 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-full shadow hover:shadow-md transition"
+                        >
+                          Solve
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>

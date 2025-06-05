@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useContext } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import {AdminContext} from '../context/AdminContext'
 
 // Clean TextArea with refined glass effect
 const TextArea = ({ value, onChange, rows = 3, placeholder, className = '', ...props }) => (
@@ -29,12 +31,19 @@ const CreateProblem = () => {
   const [constraints, setConstraints] = useState('');
   const [difficulty, setDifficulty] = useState('easy');
   const [tags, setTags] = useState([]);
+  const [tagInput, setTagInput] = useState("");
   const [samples, setSamples] = useState([{ input: '', output: '' }]);
   const [inputFiles, setInputFiles] = useState([]);
   const [outputFiles, setOutputFiles] = useState([]);
   const [testCaseZip, setTestCaseZip] = useState(null);
   const [isUploadingZip, setIsUploadingZip] = useState(false);
   const [activeSection, setActiveSection] = useState(0);
+  const {problems,getProblems} = useContext(AdminContext);
+
+  const inputRef = useRef(null);
+  const outputRef = useRef(null);
+
+  const navigate = useNavigate();
 
   const handleSampleChange = (index, field, value) => {
     const updatedSamples = [...samples];
@@ -119,7 +128,6 @@ const CreateProblem = () => {
       });
 
       if (data.success) {
-        toast.success(data.message);
         setTitle('');
         setDescription('');
         setInputFormat('');
@@ -131,6 +139,10 @@ const CreateProblem = () => {
         setInputFiles([]);
         setOutputFiles([]);
         setTestCaseZip(null);
+        getProblems(); // Refresh from server
+        navigate('/problems');
+        toast.success('Problem created successfully!');
+
       } else {
         toast.error(data.message);
       }
@@ -309,8 +321,44 @@ const CreateProblem = () => {
                         <div className="relative group">
                           <input
                             type="text"
-                            value={tags.join(', ')}
-                            onChange={e => setTags(e.target.value.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0))}
+                            value={tagInput}
+                            onChange={e => {
+                              const value = e.target.value;
+                              if (value.includes(',')) {
+                                // Split by comma, add all non-empty trimmed tags
+                                const parts = value.split(',');
+                                const newTags = parts
+                                  .slice(0, -1)
+                                  .map(tag => tag.trim())
+                                  .filter(tag => tag.length > 0 && !tags.includes(tag));
+                                if (newTags.length > 0) {
+                                  setTags([...tags, ...newTags]);
+                                }
+                                setTagInput(parts[parts.length - 1]);
+                              } else {
+                                setTagInput(value);
+                              }
+                            }}
+                            onBlur={() => {
+                              const newTag = tagInput.trim();
+                              if (newTag.length > 0 && !tags.includes(newTag)) {
+                                setTags([...tags, newTag]);
+                              }
+                              setTagInput("");
+                            }}
+                            onKeyDown={e => {
+                              if (e.key === "Enter") {
+                                e.preventDefault();
+                                const newTag = tagInput.trim();
+                                if (newTag.length > 0 && !tags.includes(newTag)) {
+                                  setTags([...tags, newTag]);
+                                }
+                                setTagInput("");
+                              }
+                              if (e.key === "Backspace" && tagInput === "") {
+                                setTags(tags.slice(0, -1));
+                              }
+                            }}
                             className="w-full px-4 py-3 bg-slate-800/80 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400/50 transition-all duration-300 shadow-lg group-hover:border-white/30"
                             placeholder="array, sorting, dp"
                           />
@@ -324,6 +372,14 @@ const CreateProblem = () => {
                                 className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-500/20 text-blue-300 border border-blue-500/30"
                               >
                                 {tag}
+                                <button
+                                  type="button"
+                                  className="ml-2 text-blue-300 hover:text-red-400 focus:outline-none"
+                                  onClick={() => setTags(tags.filter((_, i) => i !== index))}
+                                  aria-label={`Remove ${tag}`}
+                                >
+                                  &times;
+                                </button>
                               </span>
                             ))}
                           </div>
@@ -470,19 +526,21 @@ const CreateProblem = () => {
 
                     {/* Individual Files */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                      <motion.div 
-                        className={`border-2 border-dashed rounded-2xl p-6 text-center transition-all duration-300 ${
-                          testCaseZip 
-                            ? 'border-slate-600/30 bg-slate-800/20 opacity-50 pointer-events-none' 
+                      <motion.div
+                        className={`relative border-2 border-dashed rounded-2xl p-6 text-center transition-all duration-300 flex-1 cursor-pointer ${
+                          testCaseZip
+                            ? 'border-slate-600/30 bg-slate-800/20 opacity-50 pointer-events-none'
                             : 'border-white/30 bg-slate-800/40 hover:border-green-400/50'
                         }`}
                         whileHover={!testCaseZip ? { scale: 1.02 } : {}}
+                        onClick={() => !testCaseZip && inputRef.current && inputRef.current.click()}
                       >
-                        <input 
-                          type="file" 
-                          multiple 
-                          onChange={handleInputFiles} 
-                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                        <input
+                          ref={inputRef}
+                          type="file"
+                          multiple
+                          onChange={handleInputFiles}
+                          className="hidden"
                           disabled={!!testCaseZip}
                         />
                         <div className="flex flex-col items-center">
@@ -498,19 +556,22 @@ const CreateProblem = () => {
                         </div>
                       </motion.div>
 
-                      <motion.div 
-                        className={`border-2 border-dashed rounded-2xl p-6 text-center transition-all duration-300 ${
-                          testCaseZip 
-                            ? 'border-slate-600/30 bg-slate-800/20 opacity-50 pointer-events-none' 
+                      {/* Output Files Panel */}
+                      <motion.div
+                        className={`relative border-2 border-dashed rounded-2xl p-6 text-center transition-all duration-300 flex-1 cursor-pointer ${
+                          testCaseZip
+                            ? 'border-slate-600/30 bg-slate-800/20 opacity-50 pointer-events-none'
                             : 'border-white/30 bg-slate-800/40 hover:border-orange-400/50'
                         }`}
                         whileHover={!testCaseZip ? { scale: 1.02 } : {}}
+                        onClick={() => !testCaseZip && outputRef.current && outputRef.current.click()}
                       >
-                        <input 
-                          type="file" 
-                          multiple 
-                          onChange={handleOutputFiles} 
-                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                        <input
+                          ref={outputRef}
+                          type="file"
+                          multiple
+                          onChange={handleOutputFiles}
+                          className="hidden"
                           disabled={!!testCaseZip}
                         />
                         <div className="flex flex-col items-center">
@@ -550,7 +611,7 @@ const CreateProblem = () => {
                   {activeSection < 2 ? (
                     <motion.button
                       type="button"
-                      onClick={() => setActiveSection(activeSection + 1)}
+                      onClick={(e) => {e.preventDefault(); setActiveSection(activeSection + 1)}}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-300 font-medium shadow-lg"

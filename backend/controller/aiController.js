@@ -1,28 +1,44 @@
 import axios from 'axios';
 import dotenv from 'dotenv';
+import Problem from '../model/problemModel.js';
 dotenv.config();
 
 const reviewCode = async (req, res) => {
-  const { code, language } = req.body;
+  const { code, language, problemId } = req.body;
 
-  if (!code || !language || code === '// Write your code here...') {
-    return res.status(400).json({ error: 'Code and language are required.' });
+  const problemInfo = await Problem.find({_id:problemId})
+    .select('description constraints inputFormat outputFormat samples');
+
+  if (!problemInfo) {
+    return res.status(404).json({ success: false, message: 'Problem not found' });
   }
+  console.log(problemInfo[0].description);
+  
+  const fallbackPrompt = `
+  Here is a problem explain and solve this first then code in ${language}:
 
-  const prompt = `
-You're an AI code reviewer. The language is ${language}.
-Analyze the code below. Your response should include:
-1. Any syntax or logical errors.
-2. Suggestions for improvement.
-3. Optimized versions (if possible).
-4. Overall feedback.
-use the bullet points and markdown format for better readability and also give crisp and concise response.
+  Description:
+  ${problemInfo[0].description}
 
-Here is the code:
-\`\`\`${language}
-${code}
-\`\`\`
-`;
+  Constraints:
+  ${problemInfo[0].constraints}
+  `;
+
+  const prompt = (code && code !== '// Write your code here...') ? `
+  You're an AI code reviewer. The language is ${language}.
+  Analyze the code below. Your response should include:
+  1. Any syntax or logical errors.
+  2. Suggestions for improvement.
+  3. Optimized versions (if possible).
+  4. Overall feedback.
+  Use bullet points and markdown format for better readability, and give a crisp and concise response.
+
+  Here is the code:
+  \`\`\`${language}
+  ${code}
+  \`\`\`
+  ` : fallbackPrompt;
+
 
   try {
     const response = await axios.post(

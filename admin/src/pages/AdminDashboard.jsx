@@ -1,9 +1,10 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect, useRe } from 'react';
 import { AdminContext } from '../context/AdminContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { Eye, Pencil, Trash2 } from "lucide-react";
+import ConfirmationModal from '../components/ConfirmationModal';
 import { FiFilter, FiX, FiChevronDown, FiChevronUp, FiCheck } from 'react-icons/fi';
 
 const DSATags = [
@@ -14,12 +15,47 @@ const DSATags = [
 ];
 
 const Problems = () => {
-  const { problems, token } = useContext(AdminContext);
+  const { problems, token, getProblems } = useContext(AdminContext);
   const navigate = useNavigate();
   const [selectedDifficulty, setSelectedDifficulty] = useState(null);
   const [selectedTags, setSelectedTags] = useState([]);
   const [isTagsDropdownOpen, setIsTagsDropdownOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Fix filter visibility on load and handle initial loading
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setIsSidebarOpen(true);
+      } else {
+        setIsSidebarOpen(false);
+      }
+    };
+
+    // Set initial state
+    handleResize();
+    
+    // Add event listener
+    window.addEventListener('resize', handleResize);
+    
+    // Cleanup
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Handle loading state based on problems data
+  useEffect(() => {
+    if (problems !== undefined) {
+      // Add a small delay to show the loading state
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+      }, 800);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [problems]);
 
   const getTagColor = (difficulty) => {
     switch (difficulty) {
@@ -45,21 +81,44 @@ const Problems = () => {
     return matchesDifficulty && matchesTags;
   });
 
-  const onDeleteHandler = async (id) => {
-    if(token){
-      const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/problem/delete/${id}`, { id }, {headers:{token}});
-      if(res.data.success) {
-        window.location.reload();
-        toast.success("Problem deleted successfully");
-      } else {
-        toast.error(res.data.message || "Failed to delete problem");
+  // Function to show confirmation modal
+  const onDeleteHandler = (id) => {
+    setDeleteId(id);
+    setShowDeleteModal(true);
+  };
+
+  // Function to actually delete after confirmation
+  const confirmDelete = async () => {
+    if (token && deleteId) {
+      try {
+        const res = await axios.post(
+          `${import.meta.env.VITE_BACKEND_URL}/api/problem/delete/${deleteId}`, 
+          { id: deleteId }, 
+          { headers: { token } }
+        );
+        
+        if (res.data.success) {
+          getProblems();
+          toast.success('Problem deleted successfully!');
+        } else {
+          toast.error(res.data.message || "Failed to delete problem");
+        }
+      } catch (error) {
+        toast.error("Failed to delete problem");
       }
-    }
-    else 
-    {
+    } else {
       toast.error("You are not authorized to delete problems");
-      return;
     }
+    
+    // Close modal and reset state
+    setShowDeleteModal(false);
+    setDeleteId(null);
+  };
+
+  // Function to cancel deletion
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+    setDeleteId(null);
   };
 
   const resetFilters = () => {
@@ -67,6 +126,29 @@ const Problems = () => {
     setSelectedTags([]);
     setIsTagsDropdownOpen(false);
   };
+
+  // Loading Screen Component
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-[#07034d] to-[#1e0750] flex items-center justify-center">
+        <div className="text-center">
+          {/* Golden Spinning Circle */}
+          <div className="w-16 h-16 border-4 border-yellow-400/30 border-t-yellow-400 rounded-full animate-spin mx-auto mb-4"></div>
+          
+          {/* Loading Text */}
+          <h2 className="text-xl font-semibold text-amber-400 mb-2">Loading Problems</h2>
+          <p className="text-indigo-200 text-sm">Please wait while we fetch the latest challenges...</p>
+          
+          {/* Optional: Animated dots */}
+          <div className="flex justify-center mt-4 space-x-1">
+            <div className="w-2 h-2 bg-yellow-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+            <div className="w-2 h-2 bg-yellow-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+            <div className="w-2 h-2 bg-yellow-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#07034d] to-[#1e0750] py-30 px-4 sm:px-6 lg:px-8">
@@ -82,7 +164,7 @@ const Problems = () => {
         </div>
 
         {/* Filter Sidebar */}
-        {(isSidebarOpen || window.innerWidth >= 768) && (
+        {isSidebarOpen && (
           <div className="w-full md:w-56 flex-shrink-0 md:mr-6 mb-6 md:mb-0">
             <div className="bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 p-2 mt-15">
               <div className="flex items-center justify-between mb-4">
@@ -242,7 +324,7 @@ const Problems = () => {
                       </div>
 
                       <div className="flex items-center space-x-3">
-                          {/* View */}
+                        {/* View */}
                         <button
                           onClick={() => navigate(`/view-problem/${problem._id}`)}
                           className="p-1 bg-blue-500 hover:bg-blue-600 text-white rounded-full transition shadow-md"
@@ -261,7 +343,7 @@ const Problems = () => {
                         </button>
 
                         {/* Delete */}
-                        <button
+                        <button 
                           onClick={() => onDeleteHandler(problem._id)}
                           className="p-1 bg-red-500 hover:bg-red-600 text-white rounded-full transition shadow-md"
                           title="Delete"
@@ -304,6 +386,16 @@ const Problems = () => {
           </div>
         </div>
       </div>
+
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={cancelDelete}
+        onConfirm={confirmDelete}
+        title="Delete Problem"
+        message="Are you sure you want to delete this problem? This action cannot be undone."
+        confirmText="Delete"
+      />
     </div>
   );
 };

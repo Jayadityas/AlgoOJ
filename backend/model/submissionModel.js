@@ -23,6 +23,7 @@ const submissionSchema = new mongoose.Schema(
     },
     output: { type: String },
     executionTime: { type: String },
+    memoryUsed: { type: String },
   },
   { timestamps: true }
 );

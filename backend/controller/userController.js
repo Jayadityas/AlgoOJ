@@ -4,6 +4,7 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import cloudinary from '../config/cloudinary.js'
 import sendEmail from '../service/sendEmail.js'
+import Problem from '../model/problemModel.js'
 
 
 const registerUser = async (req, res) => {
@@ -44,7 +45,7 @@ const registerUser = async (req, res) => {
         const newUser = await newUserData.save();
 
         //generating jwt tokens for managing user sessions
-        const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+        const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, { expiresIn: '3h' });
 
         res.json({success: true, message: 'User registered successfully!', token});
 
@@ -86,7 +87,7 @@ const loginUser = async (req, res) => {
         const role = existingUser.role
 
         //generating jwt tokens for managing user sessions
-        const token = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+        const token = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET, { expiresIn: '3h' });
 
         res.json({ success: true, message: `${existingUser.role} logged in successfully!`, token , role});
 
@@ -197,6 +198,30 @@ const resetPassword = async (req, res) => {
   }
 };
 
+const addBookmark = async (req, res) => {
+  const { problemId } = req.body;
+  try {
+    const userId = req.user.id;
 
+    // Check if the problem exists
+    const problem = await Problem.findById(problemId);
+    if (!problem) { 
+      return res.status(404).json({ success: false, message: 'Problem not found' });
+    }   
+    // Check if the user already bookmarked the problem
+    const user = await User.findById(userId);
+    if (user.bookmarks.includes(problemId)) {
+      return res.status(400).json({ success: false, message: 'Problem already bookmarked' });
+    }
+    // Add the problem to the user's bookmarks
+    user.bookmarks.push(problemId);
+    await user.save();
+    res.status(200).json({ success: true, message: 'Problem bookmarked successfully' });
+  }
+  catch (error) {
+    console.error('Error adding bookmark:', error);
+    res.status(500).json({ success: false, message: 'Failed to bookmark problem' });
+  }
+}
 
-export { registerUser , loginUser , getUserProfile , updateUserProfile , forgotPassword , resetPassword}
+export { registerUser , loginUser , getUserProfile , updateUserProfile , forgotPassword , resetPassword, addBookmark}

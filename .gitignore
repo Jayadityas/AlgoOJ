@@ -83,6 +83,9 @@ frontend/.env
 backend/.env
 compiler/ .env
 
+ojpro.pem
+./ojpro.pem
+.ojpro.pem/
 
 # OS-specific
 .DS_Store

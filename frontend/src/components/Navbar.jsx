@@ -68,7 +68,7 @@ const Navbar = () => {
         </div>
 
         {/* Desktop Navigation */}
-        <ul className="hidden md:flex lg:ml-70 space-x-5 text-md font-medium">
+        <ul className="hidden md:flex lg:ml-80 space-x-5 text-md font-medium">
           {navItems.map(({ name, path }) => (
             <NavItem key={name} name={name} path={path} />
           ))}

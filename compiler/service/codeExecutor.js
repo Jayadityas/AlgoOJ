@@ -29,7 +29,13 @@ export const executeCode = (code, language, input = '') => {
     };
 
     const runWithTimeout = (command, args, onFinish) => {
-      const runProcess = spawn(command, args, { shell: true });
+      const fullCommand = isWindows
+        ? [command, ...args]
+        : ['/usr/bin/time', ['-v', command, ...args]];
+
+      const runProcess = isWindows
+        ? spawn(fullCommand[0], fullCommand.slice(1), { shell: true })
+        : spawn(fullCommand[0], fullCommand[1], { shell: true });
 
       let stdout = '';
       let stderr = '';
@@ -53,13 +59,23 @@ export const executeCode = (code, language, input = '') => {
         if (!finished) {
           finished = true;
           clearTimeout(timeout);
-          if (code !== 0) return onFinish({ success: false, error: stderr || 'Runtime Error' });
-          return onFinish({ success: true, output: stdout.trim() });
+
+          let memoryUsed = null;
+          if (!isWindows) {
+            const memoryMatch = stderr.match(/Maximum resident set size.*:\s*(\d+)/);
+            memoryUsed = memoryMatch ? (parseInt(memoryMatch[1]) / 1024).toFixed(2) : null; // convert KB to MB
+          }
+
+          if (code !== 0) {
+            return onFinish({ success: false, error: stderr.trim(), memoryUsed });
+          }
+
+          return onFinish({ success: true, output: stdout.trim(), memoryUsed });
         }
       };
 
       runProcess.on('close', handleClose);
-      runProcess.on('exit', handleClose); // fallback if 'close' is not emitted
+      runProcess.on('exit', handleClose);
     };
 
     if (language === 'cpp') {

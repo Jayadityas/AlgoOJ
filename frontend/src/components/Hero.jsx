@@ -103,6 +103,7 @@ export default function Hero() {
             className="mt-10 flex gap-6 flex-wrap"
           >
             <motion.button
+              onClick={()=>navigate('/login')}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.75 }}
               className="px-8 py-3  rounded-full bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold text-lg hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-300 relative overflow-hidden group  border-transparent hover:border-white animate-borderMove"

@@ -10,6 +10,7 @@ const __dirname = path.dirname(__filename);
 
 const createProblem = async (req, res) => {
   try {
+    // console.log(req.files);
     const { role } = req.user;
     if (role !== 'admin') {
       return res.status(403).json({ success: false, message: 'You are not authorized to create a problem!' });
@@ -151,7 +152,6 @@ const getProblemById = async (req, res) => {
 
 const updateProblem = async (req, res) => {
   try {
-    // console.log(req.files);
     const { id } = req.params;
     const { role } = req.user;
 
@@ -161,8 +161,8 @@ const updateProblem = async (req, res) => {
 
     const updateData = {};
 
+    // Parse JSON fields
     try {
-      console.log(req.body.tags);
       updateData.samples = JSON.parse(req.body.samples || '[]');
       updateData.tags = JSON.parse(req.body.tags || '[]');
     } catch (err) {
@@ -200,11 +200,8 @@ const updateProblem = async (req, res) => {
     if (zipFile) {
       const zip = new AdmZip(zipFile.path);
       const zipEntries = zip.getEntries();
-
       const testPairs = {};
-
-      // Temp directory to save extracted files (ensure it exists)
-      const uploadDir = 'uploads/';
+      const uploadDir = path.resolve('uploads/');
 
       // Make sure upload dir exists
       if (!fs.existsSync(uploadDir)) {
@@ -213,8 +210,6 @@ const updateProblem = async (req, res) => {
 
       zipEntries.forEach(entry => {
         if (entry.isDirectory) return;
-
-        // Extract only files at any folder depth, grab the base filename
         const name = entry.entryName.toLowerCase().split('/').pop();
         const match = name.match(/(input|output)(\d+)\.txt$/i);
 
@@ -224,13 +219,9 @@ const updateProblem = async (req, res) => {
 
           // Generate unique filename to avoid conflicts
           const uniqueFilename = `${Date.now()}-${name}`;
-
-          // Save extracted file to disk
           const filePath = path.join(uploadDir, uniqueFilename);
           fs.writeFileSync(filePath, entry.getData());
-
-          // Store path relative to project root or as you prefer
-          testPairs[num][type + 'FilePath'] = filePath;
+          testPairs[num][type + 'FilePath'] = filePath.replace(/\\/g, '/'); // normalize for MongoDB
         }
       });
 
@@ -246,23 +237,16 @@ const updateProblem = async (req, res) => {
 
       // Remove the uploaded ZIP file after extraction
       fs.unlinkSync(zipFile.path);
-    }
-
-
-    // Process individual files if no ZIP
-    else {
+    } else {
       if (inputFiles.length !== outputFiles.length) {
         return res.status(400).json({ success: false, message: 'Input/Output file count mismatch' });
       }
 
       for (let i = 0; i < inputFiles.length; i++) {
         newHiddenTests.push({
-          input: fs.readFileSync(inputFiles[i].path, 'utf8'),
-          output: fs.readFileSync(outputFiles[i].path, 'utf8')
+          inputFilePath: inputFiles[i].path.replace(/\\/g, '/'),
+          outputFilePath: outputFiles[i].path.replace(/\\/g, '/')
         });
-        // Clean up individual files
-        fs.unlinkSync(inputFiles[i].path);
-        fs.unlinkSync(outputFiles[i].path);
       }
     }
 
@@ -285,7 +269,6 @@ const updateProblem = async (req, res) => {
     res.status(500).json({ success: false, message: 'Problem update failed!' });
   }
 };
-
 
 const deleteProblem = async (req, res) => {
     try {

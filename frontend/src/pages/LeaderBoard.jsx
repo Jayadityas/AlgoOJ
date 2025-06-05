@@ -44,8 +44,22 @@ const LeaderBoard = () => {
 
   if (loading) {
     return (
-      <div className="h-screen flex items-center justify-center bg-[#0a063a]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-yellow-400"></div>
+      <div className="min-h-screen bg-gradient-to-br from-[#07034d] to-[#1e0750] flex items-center justify-center">
+        <div className="text-center">
+          {/* Golden Spinning Circle */}
+          <div className="w-16 h-16 border-4 border-yellow-400/30 border-t-yellow-400 rounded-full animate-spin mx-auto mb-4"></div>
+          
+          {/* Loading Text */}
+          <h2 className="text-xl font-semibold text-amber-400 mb-2">Loading Leaderboard</h2>
+          <p className="text-indigo-200 text-sm">Please wait while we fetch the leaderboard...</p>
+          
+          {/* Optional: Animated dots */}
+          <div className="flex justify-center mt-4 space-x-1">
+            <div className="w-2 h-2 bg-yellow-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+            <div className="w-2 h-2 bg-yellow-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+            <div className="w-2 h-2 bg-yellow-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+          </div>
+        </div>
       </div>
     );
   }

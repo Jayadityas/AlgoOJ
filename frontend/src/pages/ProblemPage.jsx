@@ -7,20 +7,17 @@ import { highlight, languages } from 'prismjs/components/prism-core';
 import 'prismjs/components/prism-clike';
 import 'prismjs/components/prism-javascript';
 import 'prismjs/themes/prism.css';
-import { javascript } from '@codemirror/lang-javascript';
-import { python } from '@codemirror/lang-python';
-import { cpp } from '@codemirror/lang-cpp';
+import Editor from '@monaco-editor/react';
 import { toast } from 'react-toastify';
 import { AppContext } from '../context/AppContext';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { materialDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import remarkGfm from 'remark-gfm';
-import { EditorView } from '@codemirror/view';
 
 const languageOptions = {
-  javascript: { label: 'JavaScript', extension: javascript() },
-  python: { label: 'Python', extension: python() },
-  cpp: { label: 'C++', extension: cpp() },
+    javascript: { label: 'JavaScript', value: 'javascript' },
+    python: { label: 'Python', value: 'python' },
+    cpp: { label: 'C++', value: 'cpp' }
 };
 
 const ProblemPage = () => {
@@ -28,7 +25,7 @@ const ProblemPage = () => {
   const { token, userData, problems } = useContext(AppContext);
 
   const [problem, setProblem] = useState(null);
-  const [code, setCode] = useState('// Write your code here...');
+  const [code, setCode] = useState('//Write your code here...');
   const [language, setLanguage] = useState('cpp');
   const [verdict, setVerdict] = useState(null);
   const [output, setOutput] = useState(null);
@@ -47,6 +44,49 @@ const ProblemPage = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [run,setRun] = useState(false);
   const [showAIReview, setShowAIReview] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [theme, setTheme] = useState('vs-dark');
+
+  const themeOptions = {
+    'vs-dark': { 
+      label: 'Dark (VS Code)', 
+      bg: 'bg-gray-900', 
+      border: 'border-gray-700',
+      selectBg: 'bg-gray-700',
+      selectHover: 'hover:bg-gray-600'
+    },
+    'vs-light': { 
+      label: 'Light', 
+      bg: 'bg-gray-50', 
+      border: 'border-gray-300',
+      selectBg: 'bg-white',
+      selectHover: 'hover:bg-gray-100'
+    },
+    'hc-black': { 
+      label: 'High Contrast Dark', 
+      bg: 'bg-black', 
+      border: 'border-yellow-400',
+      selectBg: 'bg-gray-900',
+      selectHover: 'hover:bg-gray-800'
+    },
+    'github-dark': { 
+      label: 'GitHub Dark', 
+      bg: 'bg-slate-900', 
+      border: 'border-slate-600',
+      selectBg: 'bg-slate-700',
+      selectHover: 'hover:bg-slate-600'
+    },
+    'monokai': { 
+      label: 'Monokai', 
+      bg: 'bg-stone-900', 
+      border: 'border-stone-600',
+      selectBg: 'bg-stone-700',
+      selectHover: 'hover:bg-stone-600'
+    }
+  };
+
+  const currentTheme = themeOptions[theme];
+
   
   const containerRef = useRef(null);
   const dragHandleRef = useRef(null);
@@ -91,6 +131,22 @@ const ProblemPage = () => {
 
   useEffect(() => {
     const savedCode = localStorage.getItem(`code-${problemId}`);
+    const savedTimestamp = localStorage.getItem(`code-timestamp-${problemId}`);
+
+    if (savedCode && savedTimestamp) {
+      const now = Date.now();
+      const savedTime = Number(savedTimestamp);
+      const fifteenMinutes = 120 * 60 * 1000;
+
+      if (now - savedTime <= fifteenMinutes) {
+        setCode(savedCode);
+      } else {
+        // Expired - remove it
+        localStorage.removeItem(`code-${problemId}`);
+        localStorage.removeItem(`code-timestamp-${problemId}`);
+      }
+    }
+
     const savedLanguage = localStorage.getItem(`language-${problemId}`);
     const savedReview = localStorage.getItem(`aiReviewResponse-${problemId}`);
     const savedReviewCount = localStorage.getItem(`aiReviewCount-${problemId}`);
@@ -100,7 +156,7 @@ const ProblemPage = () => {
       const oneDayInMs = 24 * 60 * 60 * 1000;
       const now = new Date();
       const lastDate = new Date(lastReviewDate);
-      
+
       if (now - lastDate > oneDayInMs) {
         localStorage.setItem(`aiReviewCount-${problemId}`, '0');
         setAiReviewCount(0);
@@ -109,13 +165,15 @@ const ProblemPage = () => {
 
     if (savedReview) setAiReviewResponse(savedReview);
     if (savedReviewCount) setAiReviewCount(Number(savedReviewCount));
-    if (savedCode) setCode(savedCode);
     if (savedLanguage) setLanguage(savedLanguage);
   }, [problemId]);
 
+
   useEffect(() => {
     localStorage.setItem(`code-${problemId}`, code);
+    localStorage.setItem(`code-timestamp-${problemId}`, Date.now().toString());
   }, [code, problemId]);
+
 
   useEffect(() => {
     localStorage.setItem(`language-${problemId}`, language);
@@ -135,9 +193,14 @@ const ProblemPage = () => {
       if (selectedProblem) {
         setProblem(selectedProblem);
       }
+      // Add a delay to show the loading state
+      setTimeout(() => {
+        setLoading(false);
+      }, 800);
     } catch (error) {
       console.error(error);
       toast.error('An error occurred while fetching the problem');
+      setLoading(false);
     }
   }, [problemId, problems]);
 
@@ -191,12 +254,12 @@ const ProblemPage = () => {
       setOutput(res.data.output);
       setVerdict(res.data.verdict);
       setExecutionTime(res.data.executionTime);
-      setMemoryUsage(Math.floor(Math.random() * 10) + 5);
+      setMemoryUsage(res.data.memoryUsed);
       setTestCases([]);
       setVerdict(res.data.verdict);
       setOutput(res.data.output);
       setExecutionTime(res.data.executionTime);
-      setMemoryUsage(res.data.memoryUsage);
+      setMemoryUsage(Math.floor(Math.random() * 10) + 5);
 
       if (res.data.failedTestCase) {
         setTestCases([
@@ -221,11 +284,10 @@ const ProblemPage = () => {
   };
 
   const handleAIReview = async () => {
-    if (aiReviewCount >= 1) {
+    if (aiReviewCount >= 2) {
       setShowPlanPopup(true);
       return;
     }
-
     setIsReviewing(true);
     try {
       const res = await axios.post(
@@ -252,8 +314,31 @@ const ProblemPage = () => {
     }
   };
 
+  // Loading Screen Component
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-[#07034d] to-[#1e0750] flex items-center justify-center">
+        <div className="text-center">
+          {/* Golden Spinning Circle */}
+          <div className="w-16 h-16 border-4 border-yellow-400/30 border-t-yellow-400 rounded-full animate-spin mx-auto mb-4"></div>
+          
+          {/* Loading Text */}
+          <h2 className="text-xl font-semibold text-amber-400 mb-2">Loading Problem</h2>
+          <p className="text-indigo-200 text-sm">Please wait while we fetch the problem details...</p>
+          
+          {/* Optional: Animated dots */}
+          <div className="flex justify-center mt-4 space-x-1">
+            <div className="w-2 h-2 bg-yellow-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+            <div className="w-2 h-2 bg-yellow-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+            <div className="w-2 h-2 bg-yellow-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col p-2 sm:p-3 bg-gradient-to-br from-[#07034d] to-[#1e0750] text-gray-200 min-h-screen">
+    <div className="flex flex-col p-2 sm:p-3 bg-gradient-to-br from-[#07034d] to-[#1e0750] text-gray-200 min-h-screen pb-16 sm:pb-20 lg:pb-24">
       {/* Main Content Area */}
       <div 
         ref={containerRef}
@@ -346,54 +431,96 @@ const ProblemPage = () => {
         </div>
         
         {/* Code Editor Panel */}
-        <div className="flex-1 flex flex-col bg-gray-800 overflow-hidden min-h-0">
-          <div className="flex items-center justify-between p-3 sm:p-4 border-b border-gray-700">
-            <select
-              value={language}
-              onChange={(e) => setLanguage(e.target.value)}
-              className="bg-gray-700 text-white rounded px-2 sm:px-3 py-1 text-xs sm:text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 w-full max-w-xs"
-            >
-              {Object.keys(languageOptions).map((key) => (
-                <option key={key} value={key} className="bg-gray-800">
-                  {languageOptions[key].label}
-                </option>
-              ))}
-            </select>
+        <div className={`flex-1 flex flex-col ${currentTheme.bg} overflow-hidden min-h-0`}>
+          {/* Enhanced Control Panel */}
+          <div className={`flex items-center justify-between p-4 ${currentTheme.border} border-b backdrop-blur-sm`}>
+            <div className="flex items-center space-x-4">
+              {/* Language Selector */}
+              <div className="flex flex-col space-y-1">
+                <label className="text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  Language
+                </label>
+                <select
+                  value={language}
+                  onChange={(e) => setLanguage(e.target.value)}
+                  className={`${currentTheme.selectBg} ${currentTheme.selectHover} text-white rounded-lg px-3 py-1 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-200 cursor-pointer shadow-lg`}
+                >
+                  {Object.entries(languageOptions).map(([key, option]) => (
+                    <option key={key} value={option.value} className={currentTheme.selectBg}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Theme Selector */}
+              <div className="flex flex-col space-y-1">
+                <label className="text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  Theme
+                </label>
+                <select
+                  value={theme}
+                  onChange={(e) => setTheme(e.target.value)}
+                  className={`${currentTheme.selectBg} ${currentTheme.selectHover} text-white rounded-lg px-3 py-1 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 transition-all duration-200 cursor-pointer shadow-lg`}
+                >
+                  {Object.entries(themeOptions).map(([key, option]) => (
+                    <option key={key} value={key} className={currentTheme.selectBg}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Status Indicator */}
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+              <span className="text-xs text-gray-400 font-medium">Ready</span>
+            </div>
           </div>
 
-          <div className="flex-1 overflow-hidden min-h-0">
-            <CodeMirror
-              value={code}
+          {/* Code Editor */}
+          <div className="flex-1 relative">
+            <Editor
               height="100%"
-              extensions={[
-                languageOptions[language].extension,
-                EditorView.theme({
-                  '.cm-cursor': {
-                    borderLeft: '3px solid #60a5fa',
-                    borderRadius: '1px',
-                    animation: 'blink 1.2s ease-in-out infinite',
-                  },
-                  '.cm-cursor-primary': {
-                    borderLeft: '3px solid #3b82f6',
-                    borderRadius: '1px',
-                  },
-                  '.cm-cursor-secondary': {
-                    borderLeft: '2px solid #93c5fd',
-                    borderRadius: '1px',
-                  },
-                  '.cm-content': {
-                    caretColor: '#60a5fa',
-                  },
-                }),
-              ]}
-              onChange={(value) => setCode(value)}
-              theme="dark"
-              basicSetup={{
-                lineNumbers: true,
-              }}
-              style={{
-                fontSize: window.innerWidth < 640 ? '0.875rem' : '1rem',
-                fontFamily: 'monospace',
+              language={language}
+              value={code}
+              onChange={(value) => setCode(value || '')}
+              theme={theme}
+              options={{
+                fontSize: 15,
+                fontFamily: '"JetBrains Mono", "Fira Code", Monaco, Menlo, "Ubuntu Mono", monospace',
+                lineNumbers: 'on',
+                minimap: { enabled: false },
+                scrollBeyondLastLine: false,
+                automaticLayout: true,
+                wordWrap: 'on',
+                tabSize: language === 'python' ? 4 : 2,
+                insertSpaces: true,
+                detectIndentation: false,
+                fontLigatures: true,
+                cursorBlinking: 'smooth',
+                cursorSmoothCaretAnimation: true,
+                smoothScrolling: true,
+                // Language-specific features
+                quickSuggestions: true,
+                suggestOnTriggerCharacters: true,
+                acceptSuggestionOnEnter: 'on',
+                snippetSuggestions: 'top',
+                // Bracket styling removed
+                bracketPairColorization: { enabled: false },
+                guides: {
+                  bracketPairs: false,
+                  indentation: true
+                },
+                renderWhitespace: 'selection',
+                renderControlCharacters: false,
+                scrollbar: {
+                  alwaysConsumeMouseWheel: false,
+                  handleMouseWheel: true,
+                  vertical: 'auto',
+                  horizontal: 'auto'
+                }
               }}
             />
           </div>
@@ -541,16 +668,13 @@ const ProblemPage = () => {
                 
                 <div className="space-y-3 sm:space-y-4">
                   <div className={`p-2 sm:p-3 rounded text-xs sm:text-sm ${
-                    verdict === 'Wrong Answer' 
+                     verdict === 'Wrong Answer' 
                       ? 'bg-red-900/30 text-red-400' :
-                      verdict === 'Correct Answer'
+                      (verdict === 'Correct Answer' || verdict === 'Accepted')
                       ? 'bg-green-900/30 text-green-400' 
                       : 'bg-yellow-900/30 text-yellow-400'
                   }`}>
                     <div className="flex items-center gap-2">
-                      <svg className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                      </svg>
                       <span className="break-words">{verdict}</span>
                     </div>
                   </div>
@@ -570,7 +694,7 @@ const ProblemPage = () => {
                               className={`text-xs px-2 py-1 rounded self-start ${
                                 verdict === 'Wrong Answer' 
                                   ? 'bg-red-900/30 text-red-400' :
-                                  verdict === 'Correct Answer'
+                                  (verdict === 'Correct Answer' || verdict === 'Accepted')
                                   ? 'bg-green-900/30 text-green-400' 
                                   : 'bg-yellow-900/30 text-yellow-400'
                               }`}
@@ -609,257 +733,261 @@ const ProblemPage = () => {
             )}
 
             {/* AI Review Section */}
-            {showAIReview && (
-              <div className="mt-4 sm:mt-5 bg-gradient-to-br from-slate-900 to-slate-800 text-slate-100 rounded-xl p-4 sm:p-8 overflow-y-auto resize-y max-h-[30vh] sm:max-h-[40vh] lg:max-h-[70vh] min-h-[200px] sm:min-h-[250px] text-xs sm:text-sm space-y-4 sm:space-y-6 leading-relaxed shadow-2xl border border-slate-700">
-                <ReactMarkdown
-                  children={aiReviewResponse}
-                  remarkPlugins={[remarkGfm]}
-                  components={{
-                    code({ node, inline, className, children, ...props }) {
-                      const match = /language-(\w+)/.exec(className || '');
-                      const [copied, setCopied] = useState(false);
+              {showAIReview && aiReviewResponse && aiReviewResponse.trim().length > 0 && (
+                <>
+                  <h3 className="text-xs sm:text-sm font-medium mb-4 sm:mb-6 mt-6 sm:mt-8 text-slate-200 border-b border-slate-600/30 pb-2">AI Review</h3>
+                  <div className="mt-4 sm:mt-5 bg-gradient-to-br from-slate-900 to-slate-800 text-slate-100 rounded-xl p-4 sm:p-8 overflow-y-auto resize-y max-h-[30vh] sm:max-h-[40vh] lg:max-h-[70vh] min-h-[200px] sm:min-h-[250px] text-xs sm:text-sm space-y-4 sm:space-y-6 leading-relaxed shadow-2xl border border-slate-700">
+                    <ReactMarkdown
+                      children={aiReviewResponse}
+                      remarkPlugins={[remarkGfm]}
+                      components={{
+                        code({ node, inline, className, children, ...props }) {
+                          const match = /language-(\w+)/.exec(className || '');
+                          const [copied, setCopied] = useState(false);
 
-                      const copyToClipboard = async () => {
-                        try {
-                          await navigator.clipboard.writeText(String(children));
-                          setCopied(true);
-                          setTimeout(() => setCopied(false), 2000);
-                        } catch (err) {
-                          console.error('Failed to copy:', err);
-                        }
-                      };
+                          const copyToClipboard = async () => {
+                            try {
+                              await navigator.clipboard.writeText(String(children));
+                              setCopied(true);
+                              setTimeout(() => setCopied(false), 2000);
+                            } catch (err) {
+                              console.error('Failed to copy:', err);
+                            }
+                          };
 
-                      if (!inline && match) {
-                        return (
-                          <div className="relative group my-4 sm:my-8 rounded-xl overflow-hidden border border-slate-600/50 shadow-2xl bg-gradient-to-br from-slate-900 to-slate-800">
-                            {/* Enhanced Header */}
-                            <div className="flex items-center justify-between bg-gradient-to-r from-slate-800 to-slate-700 px-3 sm:px-6 py-2 sm:py-3 border-b border-slate-600/50">
-                              <div className="flex items-center gap-2 sm:gap-3">
-                                {/* Traffic light dots */}
-                                <div className="flex gap-1 sm:gap-1.5">
-                                  <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-red-500 shadow-sm"></div>
-                                  <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-yellow-500 shadow-sm"></div>
-                                  <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-green-500 shadow-sm"></div>
-                                </div>
-                                <div className="flex items-center gap-1 sm:gap-2">
-                                  <div className="w-3 h-3 sm:w-4 sm:h-4 rounded bg-blue-500/20 flex items-center justify-center">
-                                    <svg className="w-2 h-2 sm:w-2.5 sm:h-2.5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
-                                      <path fillRule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
-                                    </svg>
+                          if (!inline && match) {
+                            return (
+                              <div className="relative group my-4 sm:my-8 rounded-xl overflow-hidden border border-slate-600/50 shadow-2xl bg-gradient-to-br from-slate-900 to-slate-800">
+                                {/* Enhanced Header */}
+                                <div className="flex items-center justify-between bg-gradient-to-r from-slate-800 to-slate-700 px-3 sm:px-6 py-2 sm:py-3 border-b border-slate-600/50">
+                                  <div className="flex items-center gap-2 sm:gap-3">
+                                    {/* Traffic light dots */}
+                                    <div className="flex gap-1 sm:gap-1.5">
+                                      <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-red-500 shadow-sm"></div>
+                                      <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-yellow-500 shadow-sm"></div>
+                                      <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-green-500 shadow-sm"></div>
+                                    </div>
+                                    <div className="flex items-center gap-1 sm:gap-2">
+                                      <div className="w-3 h-3 sm:w-4 sm:h-4 rounded bg-blue-500/20 flex items-center justify-center">
+                                        <svg className="w-2 h-2 sm:w-2.5 sm:h-2.5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                                          <path fillRule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                                        </svg>
+                                      </div>
+                                      <span className="text-xs sm:text-sm font-medium text-slate-300 tracking-wide">
+                                        {match[1].toUpperCase()}
+                                      </span>
+                                    </div>
                                   </div>
-                                  <span className="text-xs sm:text-sm font-medium text-slate-300 tracking-wide">
-                                    {match[1].toUpperCase()}
-                                  </span>
+                                  
+                                  {/* Enhanced Copy Button */}
+                                  <button
+                                    onClick={copyToClipboard}
+                                    className="flex items-center gap-1 sm:gap-2 bg-slate-700/80 hover:bg-slate-600/80 text-slate-300 hover:text-white px-2 sm:px-4 py-1 sm:py-2 rounded-lg transition-all duration-300 opacity-0 group-hover:opacity-100 transform translate-y-1 group-hover:translate-y-0 backdrop-blur-sm border border-slate-600/50 hover:border-slate-500/50 shadow-lg text-xs sm:text-sm"
+                                  >
+                                    {copied ? (
+                                      <>
+                                        <svg className="w-3 h-3 sm:w-4 sm:h-4 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                        </svg>
+                                        <span className="font-medium text-green-400 hidden sm:inline">Copied!</span>
+                                      </>
+                                    ) : (
+                                      <>
+                                        <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                        </svg>
+                                        <span className="font-medium hidden sm:inline">Copy</span>
+                                      </>
+                                    )}
+                                  </button>
                                 </div>
+                                
+                                {/* Enhanced Code Content */}
+                                <div className="relative">
+                                  <div className="absolute inset-0 bg-gradient-to-r from-slate-900/50 to-transparent pointer-events-none"></div>
+                                  
+                                  <SyntaxHighlighter
+                                    style={materialDark}
+                                    language={match[1]}
+                                    PreTag="div"
+                                    showLineNumbers={window.innerWidth >= 640}
+                                    lineNumberStyle={{
+                                      minWidth: '2rem',
+                                      paddingRight: '0.5rem',
+                                      color: '#64748b',
+                                      backgroundColor: 'transparent',
+                                      borderRight: '1px solid #334155',
+                                      marginRight: '0.5rem',
+                                      fontSize: '0.75rem',
+                                    }}
+                                    customStyle={{
+                                      margin: 0,
+                                      padding: window.innerWidth >= 640 ? '1.5rem' : '1rem',
+                                      paddingLeft: '0',
+                                      backgroundColor: 'transparent',
+                                      fontSize: window.innerWidth >= 640 ? '0.875rem' : '0.75rem',
+                                      lineHeight: '1.7',
+                                      fontFamily: '"JetBrains Mono", "Fira Code", "SF Mono", "Cascadia Code", "Roboto Mono", monospace',
+                                      fontWeight: '400',
+                                      letterSpacing: '0.025em',
+                                    }}
+                                    codeTagProps={{
+                                      style: {
+                                        fontFamily: '"JetBrains Mono", "Fira Code", "SF Mono", "Cascadia Code", "Roboto Mono", monospace',
+                                        fontSize: window.innerWidth >= 640 ? '0.875rem' : '0.75rem',
+                                        fontWeight: '400',
+                                      }
+                                    }}
+                                    {...props}
+                                  >
+                                    {String(children).replace(/\n$/, '')}
+                                  </SyntaxHighlighter>
+                                  
+                                  <div className="absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-slate-900/30 to-transparent pointer-events-none"></div>
+                                </div>
+                                
+                                <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-blue-500/5 to-purple-500/5 pointer-events-none"></div>
                               </div>
-                              
-                              {/* Enhanced Copy Button */}
-                              <button
-                                onClick={copyToClipboard}
-                                className="flex items-center gap-1 sm:gap-2 bg-slate-700/80 hover:bg-slate-600/80 text-slate-300 hover:text-white px-2 sm:px-4 py-1 sm:py-2 rounded-lg transition-all duration-300 opacity-0 group-hover:opacity-100 transform translate-y-1 group-hover:translate-y-0 backdrop-blur-sm border border-slate-600/50 hover:border-slate-500/50 shadow-lg text-xs sm:text-sm"
-                              >
-                                {copied ? (
-                                  <>
-                                    <svg className="w-3 h-3 sm:w-4 sm:h-4 text-green-400" fill="currentColor" viewBox="0 0 20 20">
-                                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                    </svg>
-                                    <span className="font-medium text-green-400 hidden sm:inline">Copied!</span>
-                                  </>
-                                ) : (
-                                  <>
-                                    <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                                    </svg>
-                                    <span className="font-medium hidden sm:inline">Copy</span>
-                                  </>
-                                )}
-                              </button>
-                            </div>
-                            
-                            {/* Enhanced Code Content */}
-                            <div className="relative">
-                              <div className="absolute inset-0 bg-gradient-to-r from-slate-900/50 to-transparent pointer-events-none"></div>
-                              
-                              <SyntaxHighlighter
-                                style={materialDark}
-                                language={match[1]}
-                                PreTag="div"
-                                showLineNumbers={window.innerWidth >= 640}
-                                lineNumberStyle={{
-                                  minWidth: '2rem',
-                                  paddingRight: '0.5rem',
-                                  color: '#64748b',
-                                  backgroundColor: 'transparent',
-                                  borderRight: '1px solid #334155',
-                                  marginRight: '0.5rem',
-                                  fontSize: '0.75rem',
-                                }}
-                                customStyle={{
-                                  margin: 0,
-                                  padding: window.innerWidth >= 640 ? '1.5rem' : '1rem',
-                                  paddingLeft: '0',
-                                  backgroundColor: 'transparent',
-                                  fontSize: window.innerWidth >= 640 ? '0.875rem' : '0.75rem',
-                                  lineHeight: '1.7',
-                                  fontFamily: '"JetBrains Mono", "Fira Code", "SF Mono", "Cascadia Code", "Roboto Mono", monospace',
-                                  fontWeight: '400',
-                                  letterSpacing: '0.025em',
-                                }}
-                                codeTagProps={{
-                                  style: {
-                                    fontFamily: '"JetBrains Mono", "Fira Code", "SF Mono", "Cascadia Code", "Roboto Mono", monospace',
-                                    fontSize: window.innerWidth >= 640 ? '0.875rem' : '0.75rem',
-                                    fontWeight: '400',
-                                  }
-                                }}
-                                {...props}
-                              >
-                                {String(children).replace(/\n$/, '')}
-                              </SyntaxHighlighter>
-                              
-                              <div className="absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-slate-900/30 to-transparent pointer-events-none"></div>
-                            </div>
-                            
-                            <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-blue-500/5 to-purple-500/5 pointer-events-none"></div>
-                          </div>
-                        );
-                      }
+                            );
+                          }
 
-                      return (
-                        <code
-                          className="relative inline-flex items-center bg-gradient-to-r from-slate-800/80 to-slate-700/80 text-emerald-300 px-1.5 sm:px-2.5 py-1 sm:py-1.5 rounded-md font-mono text-xs sm:text-sm border border-slate-600/50 shadow-sm backdrop-blur-sm before:absolute before:inset-0 before:bg-gradient-to-r before:from-emerald-500/10 before:to-blue-500/10 before:rounded-md before:-z-10"
-                          {...props}
-                        >
-                          {children}
-                        </code>
-                      );
-                    },
-                    
-                    p({ node, children, ...props }) {
-                      return (
-                        <p className="mb-3 sm:mb-5 text-slate-200 leading-6 sm:leading-7 text-sm sm:text-base" {...props}>
-                          {children}
-                        </p>
-                      );
-                    },
-                    
-                    ul({ node, children, ...props }) {
-                      return (
-                        <ul className="mb-3 sm:mb-5 space-y-1 sm:space-y-2 text-slate-200" {...props}>
-                          {children}
-                        </ul>
-                      );
-                    },
-                    
-                    ol({ node, children, ...props }) {
-                      return (
-                        <ol className="mb-3 sm:mb-5 space-y-1 sm:space-y-2 text-slate-200 list-decimal list-inside" {...props}>
-                          {children}
-                        </ol>
-                      );
-                    },
-                    
-                    li({ node, children, ...props }) {
-                      return (
-                        <li className="flex items-start gap-2 sm:gap-3 text-slate-200 leading-5 sm:leading-6" {...props}>
-                          <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-blue-400 rounded-full mt-2 sm:mt-2.5 flex-shrink-0"></span>
-                          <span className="flex-1">{children}</span>
-                        </li>
-                      );
-                    },
-                    
-                    h1({ node, children, ...props }) {
-                      return (
-                        <h1 className="text-lg sm:text-2xl font-bold text-white mt-6 sm:mt-8 mb-3 sm:mb-4 pb-2 border-b border-slate-600" {...props}>
-                          {children}
-                        </h1>
-                      );
-                    },
-                    
-                    h2({ node, children, ...props }) {
-                      return (
-                        <h2 className="text-base sm:text-xl font-semibold text-white mt-5 sm:mt-7 mb-2 sm:mb-3 flex items-center gap-2" {...props}>
-                          <span className="w-0.5 sm:w-1 h-4 sm:h-6 bg-blue-500 rounded-full"></span>
-                          {children}
-                        </h2>
-                      );
-                    },
-                    
-                    h3({ node, children, ...props }) {
-                      return (
-                        <h3 className="text-sm sm:text-lg font-medium text-slate-100 mt-4 sm:mt-6 mb-1 sm:mb-2" {...props}>
-                          {children}
-                        </h3>
-                      );
-                    },
-                    
-                    blockquote({ node, children, ...props }) {
-                      return (
-                        <blockquote className="border-l-2 sm:border-l-4 border-blue-500 bg-slate-800/50 pl-3 sm:pl-6 py-2 sm:py-4 my-3 sm:my-6 italic text-slate-300 rounded-r-lg" {...props}>
-                          {children}
-                        </blockquote>
-                      );
-                    },
-                    
-                    table({ node, children, ...props }) {
-                      return (
-                        <div className="overflow-x-auto my-3 sm:my-6">
-                          <table className="w-full border-collapse border border-slate-600 rounded-lg overflow-hidden text-xs sm:text-sm" {...props}>
-                            {children}
-                          </table>
-                        </div>
-                      );
-                    },
-                    
-                    th({ node, children, ...props }) {
-                      return (
-                        <th className="border border-slate-600 bg-slate-700 px-2 sm:px-4 py-1 sm:py-2 text-left font-semibold text-slate-100" {...props}>
-                          {children}
-                        </th>
-                      );
-                    },
-                    
-                    td({ node, children, ...props }) {
-                      return (
-                        <td className="border border-slate-600 px-2 sm:px-4 py-1 sm:py-2 text-slate-200" {...props}>
-                          {children}
-                        </td>
-                      );
-                    },
-                    
-                    strong({ node, children, ...props }) {
-                      return (
-                        <strong className="font-semibold text-white" {...props}>
-                          {children}
-                        </strong>
-                      );
-                    },
-                    
-                    em({ node, children, ...props }) {
-                      return (
-                        <em className="italic text-blue-300" {...props}>
-                          {children}
-                        </em>
-                      );
-                    },
-                    
-                    a({ node, children, href, ...props }) {
-                      return (
-                        <a 
-                          href={href}
-                          className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50 hover:decoration-blue-300 transition-colors duration-200 break-words"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          {...props}
-                        >
-                          {children}
-                        </a>
-                      );
-                    },
-                  }}
-                />
-              </div>
-            )}
+                          return (
+                            <code
+                              className="relative inline-flex items-center bg-gradient-to-r from-slate-800/80 to-slate-700/80 text-emerald-300 px-1.5 sm:px-2.5 py-1 sm:py-1.5 rounded-md font-mono text-xs sm:text-sm border border-slate-600/50 shadow-sm backdrop-blur-sm before:absolute before:inset-0 before:bg-gradient-to-r before:from-emerald-500/10 before:to-blue-500/10 before:rounded-md before:-z-10"
+                              {...props}
+                            >
+                              {children}
+                            </code>
+                          );
+                        },
+                        
+                        p({ node, children, ...props }) {
+                          return (
+                            <p className="mb-3 sm:mb-5 text-slate-200 leading-6 sm:leading-7 text-sm sm:text-base" {...props}>
+                              {children}
+                            </p>
+                          );
+                        },
+                        
+                        ul({ node, children, ...props }) {
+                          return (
+                            <ul className="mb-3 sm:mb-5 space-y-1 sm:space-y-2 text-slate-200" {...props}>
+                              {children}
+                            </ul>
+                          );
+                        },
+                        
+                        ol({ node, children, ...props }) {
+                          return (
+                            <ol className="mb-3 sm:mb-5 space-y-1 sm:space-y-2 text-slate-200 list-decimal list-inside" {...props}>
+                              {children}
+                            </ol>
+                          );
+                        },
+                        
+                        li({ node, children, ...props }) {
+                          return (
+                            <li className="flex items-start gap-2 sm:gap-3 text-slate-200 leading-5 sm:leading-6" {...props}>
+                              <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-blue-400 rounded-full mt-2 sm:mt-2.5 flex-shrink-0"></span>
+                              <span className="flex-1">{children}</span>
+                            </li>
+                          );
+                        },
+                        
+                        h1({ node, children, ...props }) {
+                          return (
+                            <h1 className="text-lg sm:text-2xl font-bold text-white mt-6 sm:mt-8 mb-3 sm:mb-4 pb-2 border-b border-slate-600" {...props}>
+                              {children}
+                            </h1>
+                          );
+                        },
+                        
+                        h2({ node, children, ...props }) {
+                          return (
+                            <h2 className="text-base sm:text-xl font-semibold text-white mt-5 sm:mt-7 mb-2 sm:mb-3 flex items-center gap-2" {...props}>
+                              <span className="w-0.5 sm:w-1 h-4 sm:h-6 bg-blue-500 rounded-full"></span>
+                              {children}
+                            </h2>
+                          );
+                        },
+                        
+                        h3({ node, children, ...props }) {
+                          return (
+                            <h3 className="text-sm sm:text-lg font-medium text-slate-100 mt-4 sm:mt-6 mb-1 sm:mb-2" {...props}>
+                              {children}
+                            </h3>
+                          );
+                        },
+                        
+                        blockquote({ node, children, ...props }) {
+                          return (
+                            <blockquote className="border-l-2 sm:border-l-4 border-blue-500 bg-slate-800/50 pl-3 sm:pl-6 py-2 sm:py-4 my-3 sm:my-6 italic text-slate-300 rounded-r-lg" {...props}>
+                              {children}
+                            </blockquote>
+                          );
+                        },
+                        
+                        table({ node, children, ...props }) {
+                          return (
+                            <div className="overflow-x-auto my-3 sm:my-6">
+                              <table className="w-full border-collapse border border-slate-600 rounded-lg overflow-hidden text-xs sm:text-sm" {...props}>
+                                {children}
+                              </table>
+                            </div>
+                          );
+                        },
+                        
+                        th({ node, children, ...props }) {
+                          return (
+                            <th className="border border-slate-600 bg-slate-700 px-2 sm:px-4 py-1 sm:py-2 text-left font-semibold text-slate-100" {...props}>
+                              {children}
+                            </th>
+                          );
+                        },
+                        
+                        td({ node, children, ...props }) {
+                          return (
+                            <td className="border border-slate-600 px-2 sm:px-4 py-1 sm:py-2 text-slate-200" {...props}>
+                              {children}
+                            </td>
+                          );
+                        },
+                        
+                        strong({ node, children, ...props }) {
+                          return (
+                            <strong className="font-semibold text-white" {...props}>
+                              {children}
+                            </strong>
+                          );
+                        },
+                        
+                        em({ node, children, ...props }) {
+                          return (
+                            <em className="italic text-blue-300" {...props}>
+                              {children}
+                            </em>
+                          );
+                        },
+                        
+                        a({ node, children, href, ...props }) {
+                          return (
+                            <a 
+                              href={href}
+                              className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/50 hover:decoration-blue-300 transition-colors duration-200 break-words"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              {...props}
+                            >
+                              {children}
+                            </a>
+                          );
+                        },
+                      }}
+                    />
+                  </div>
+                </>
+              )}
+
           </div>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
@@ -38,6 +38,9 @@ const UpdateProblem = () => {
   const [inputFiles, setInputFiles] = useState([]);
   const [outputFiles, setOutputFiles] = useState([]);
   const [activeSection, setActiveSection] = useState(0);
+
+  const inputRef = useRef(null);
+  const outputRef = useRef(null);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -90,7 +93,10 @@ const UpdateProblem = () => {
         toast.error("Failed to load problem");
         navigate('/');
       } finally {
-        setIsLoading(false);
+        // Add a delay to show the loading state
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 800);
       }
     };
 
@@ -133,6 +139,16 @@ const UpdateProblem = () => {
     const files = [...e.target.files];
     setInputFiles(files);
   };
+
+
+  // for debugging of asynchronous file 
+  //useEffect(() => {
+  //console.log("Input Files:", inputFiles);
+  // }, [inputFiles]);
+
+  // useEffect(() => {
+  //   console.log("Output Files:", outputFiles);
+  // }, [outputFiles]);
 
   const handleOutputFiles = (e) => {
     const files = [...e.target.files];
@@ -226,8 +242,22 @@ const UpdateProblem = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#07034d] flex items-center justify-center">
-        <div className="text-white text-xl sm:text-2xl">Loading problem data...</div>
+      <div className="min-h-screen bg-gradient-to-br from-[#07034d] to-[#1e0750] flex items-center justify-center">
+        <div className="text-center">
+          {/* Golden Spinning Circle */}
+          <div className="w-16 h-16 border-4 border-yellow-400/30 border-t-yellow-400 rounded-full animate-spin mx-auto mb-4"></div>
+          
+          {/* Loading Text */}
+          <h2 className="text-xl font-semibold text-amber-400 mb-2">Loading Problem</h2>
+          <p className="text-indigo-200 text-sm">Please wait while we fetch the problem details...</p>
+          
+          {/* Optional: Animated dots */}
+          <div className="flex justify-center mt-4 space-x-1">
+            <div className="w-2 h-2 bg-yellow-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+            <div className="w-2 h-2 bg-yellow-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+            <div className="w-2 h-2 bg-yellow-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -614,7 +644,7 @@ const UpdateProblem = () => {
                           {existingHiddenTests.map(test => (
                             <motion.div 
                               key={test._id}
-                              whileHover={{ scale: 1.01 }}
+                              // Removed whileHover to prevent scaling/translation on hover
                               className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 border border-white/10 rounded-lg bg-slate-800/40 hover:bg-slate-800/60 transition-colors duration-200 gap-2"
                             >
                               <span className="text-xs sm:text-sm font-mono text-slate-300 break-all">
@@ -637,19 +667,21 @@ const UpdateProblem = () => {
 
                     {/* Individual Files */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                      <motion.div 
-                        className={`border-2 border-dashed rounded-2xl p-4 sm:p-6 text-center transition-all duration-300 ${
-                          testCaseZip 
-                            ? 'border-slate-600/30 bg-slate-800/20 opacity-50 pointer-events-none' 
+                      <motion.div
+                        className={`relative border-2 border-dashed rounded-2xl p-4 sm:p-6 text-center transition-all duration-300 flex-1 cursor-pointer ${
+                          testCaseZip
+                            ? 'border-slate-600/30 bg-slate-800/20 opacity-50 pointer-events-none'
                             : 'border-white/30 bg-slate-800/40 hover:border-green-400/50'
                         }`}
                         whileHover={!testCaseZip ? { scale: 1.02 } : {}}
+                        onClick={() => !testCaseZip && inputRef.current && inputRef.current.click()}
                       >
-                        <input 
-                          type="file" 
-                          multiple 
-                          onChange={handleInputFiles} 
-                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                        <input
+                          ref={inputRef}
+                          type="file"
+                          multiple
+                          onChange={handleInputFiles}
+                          className="hidden"
                           disabled={!!testCaseZip}
                         />
                         <div className="flex flex-col items-center">
@@ -665,19 +697,22 @@ const UpdateProblem = () => {
                         </div>
                       </motion.div>
 
-                      <motion.div 
-                        className={`border-2 border-dashed rounded-2xl p-4 sm:p-6 text-center transition-all duration-300 ${
-                          testCaseZip 
-                            ? 'border-slate-600/30 bg-slate-800/20 opacity-50 pointer-events-none' 
+                      {/* Output Files */}
+                      <motion.div
+                        className={`relative border-2 border-dashed rounded-2xl p-4 sm:p-6 text-center transition-all duration-300 flex-1 cursor-pointer ${
+                          testCaseZip
+                            ? 'border-slate-600/30 bg-slate-800/20 opacity-50 pointer-events-none'
                             : 'border-white/30 bg-slate-800/40 hover:border-orange-400/50'
                         }`}
                         whileHover={!testCaseZip ? { scale: 1.02 } : {}}
+                        onClick={() => !testCaseZip && outputRef.current && outputRef.current.click()}
                       >
-                        <input 
-                          type="file" 
-                          multiple 
-                          onChange={handleOutputFiles} 
-                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                        <input
+                          ref={outputRef}
+                          type="file"
+                          multiple
+                          onChange={handleOutputFiles}
+                          className="hidden"
                           disabled={!!testCaseZip}
                         />
                         <div className="flex flex-col items-center">
