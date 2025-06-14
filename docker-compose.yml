@@ -1,0 +1,61 @@
+version: '3.9'
+
+services:
+  ojbackend:
+    build:
+      context: ./backend
+    image: ojbackend
+    container_name: ojbackend_container
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./backend/.env
+    volumes:
+      - uploads_data:/usr/src/app/uploads
+      - uploadsProfile_data:/usr/src/app/uploadsProfile
+    working_dir: /usr/src/app
+    entrypoint: >
+      sh -c "chown -R appuser:appuser /usr/src/app/uploads /usr/src/app/uploadsProfile &&
+         chmod 750 /usr/src/app/uploads /usr/src/app/uploadsProfile &&
+         exec npm start"
+    depends_on:
+      - mongodb
+    networks:
+      - ojnet
+
+  ojcompiler:
+    build:
+      context: ./compiler
+    image: ojcompiler
+    container_name: ojcompiler_container
+    ports:
+      - "4000:4000"
+    env_file:
+      - ./compiler/.env
+    depends_on:
+      - ojbackend
+    networks:
+      - ojnet
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: '256M'
+
+  mongodb:
+    image: mongo:latest
+    container_name: ojmongo_container
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - ojnet
+
+volumes:
+  uploads_data:
+  uploadsProfile_data:
+  mongo_data:
+
+networks:
+  ojnet:
