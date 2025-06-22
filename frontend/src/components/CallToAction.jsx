@@ -7,14 +7,14 @@ const CallToAction = () => {
   const navigate = useNavigate()
 
   return (
-    <div className="bg-[#07034d] py-30 text-white text-center">
+    <div className="bg-gradient-to-b from-[#01c4fa] to-[#14ec0c] py-30 text-white text-center">
       <h2 className="text-3xl sm:text-4xl font-extrabold">
         Ready to level up your <span className="text-amber-300">coding?</span>
       </h2>
       <br />
-      <p className="mb-6 text-lg">Join <span className="text-purple-400">THE OJ</span> community and start solving real challenges today.</p>
+      <p className="mb-6 text-lg">Join <span className="text-purple-400">Algo Online Judge</span> community and start solving real challenges today.</p>
       <motion.button
-        onClick={() => navigate('/problems')}
+        onClick={() => navigate('/login')}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         className="px-8 py-3 rounded-full bg-transparent border-2 border-purple-400 text-white font-semibold text-lg hover:bg-purple-500/20 transition-all duration-300 relative overflow-hidden group  hover:border-white animate-borderMove"

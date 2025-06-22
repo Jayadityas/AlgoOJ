@@ -11,7 +11,7 @@ const Carousel = () => {
   const images = [ss1, ss3, ss4, ss5, ss6];
 
   return (
-    <div className="w-full dark:bg-gray-900 py-10 bg-[#07034d]">
+    <div className="w-full dark:bg-gray-900 py-10 bg-[#77ff00]">
       <h1 className="font-bold text-3xl text-center mb-6 dark:text-white text-white">
         Highlights
       </h1>

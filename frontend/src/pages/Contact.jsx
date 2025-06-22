@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { motion } from 'framer-motion';
+import {NavLink, useNavigate} from 'react-router-dom'
+import { motion } from "framer-motion";
 
 const Contact = () => {
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
@@ -15,7 +16,7 @@ const Contact = () => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/contact`, formData);
+      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/contact`, { name, email, message });
       toast.success("Message sent successfully!");
       setFormData({ name: '', email: '', message: '' });
     } catch (error) {
@@ -24,13 +25,14 @@ const Contact = () => {
       setIsSubmitting(false);
     }
   };
+    const navigate = useNavigate();
 
   return (
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="min-h-screen px-4 py-20 bg-gradient-to-br from-[#07034d] to-[#1e0750]"
+      className="min-h-screen px-4 py-20 bg-gradient-to-br from-[#0eadfd] to-[#ff0909]"
     >
       {/* Floating background elements */}
       <div className="absolute inset-0 overflow-hidden">
@@ -51,7 +53,7 @@ const Contact = () => {
             transition={{ duration: 0.5 }}
             className="text-center"
           >
-            <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-blue-500">
+            <h1 className="text-4xl font-bold bg-clip-text text-[#4bea5d]">
               Contact Us
             </h1>
             <div className="mt-2 h-1 w-20 bg-gradient-to-r from-purple-500 to-blue-500 mx-auto rounded-full"></div>
@@ -61,7 +63,7 @@ const Contact = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="text-gray-300 text-center text-lg"
+            className="text-white text-center text-lg"
           >
             Have a question, feedback, or partnership inquiry? We'd love to hear from you.
           </motion.p>
@@ -70,10 +72,10 @@ const Contact = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="space-y-4 text-gray-300 text-center"
+            className="space-y-4 text-white text-center"
           >
             <p>
-              Our team at <strong className="text-purple-300">THE OJ</strong> is always open to improving your experience, resolving any issues,
+              Our team at <strong className="text-[#f97117] font-italic">Algo Online Judge</strong> is always open to improving your experience, resolving any issues,
               or answering any queries related to our platform.
             </p>
             <p>
@@ -81,7 +83,7 @@ const Contact = () => {
               24 hours.
             </p>
             <p>
-              You can also reach out to us directly at <span className="text-blue-300 font-semibold">admin@theoj.com</span>.
+              You can also reach out to us directly at <motion.button  onClick={() => navigate('/login')}><span className="text-blue-300 font-semibold">jayaditya.sahu@gmail.com</span></motion.button>.
             </p>
           </motion.div>
 
@@ -93,13 +95,13 @@ const Contact = () => {
             transition={{ delay: 0.4 }}
           >
             <div className="space-y-2">
-              <label htmlFor="name" className="block text-sm font-medium text-gray-300">Your Name</label>
+              <label htmlFor="name" className="block text-sm font-medium text-gray-300">Name</label>
               <input
                 type="text"
                 id="name"
                 name="name"
                 placeholder="John Doe"
-                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-white placeholder-gray-400 transition-all"
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-white placeholder-[#80e0f8] transition-all"
                 required
                 value={formData.name}
                 onChange={handleChange}
@@ -107,13 +109,13 @@ const Contact = () => {
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="email" className="block text-sm font-medium text-gray-300">Your Email</label>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-300">Email</label>
               <input
                 type="email"
                 id="email"
                 name="email"
                 placeholder="john@example.com"
-                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-white placeholder-gray-400 transition-all"
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-white placeholder-[#80e0f8] transition-all"
                 required
                 value={formData.email}
                 onChange={handleChange}
@@ -121,12 +123,12 @@ const Contact = () => {
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="message" className="block text-sm font-medium text-gray-300">Your Message</label>
+              <label htmlFor="message" className="block text-sm font-medium text-gray-300">Message</label>
               <textarea
                 id="message"
                 name="message"
                 placeholder="Your message here..."
-                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-white placeholder-gray-400 transition-all min-h-[150px]"
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-white placeholder-[#80e0f8] transition-all min-h-[150px]"
                 required
                 value={formData.message}
                 onChange={handleChange}
@@ -138,7 +140,7 @@ const Contact = () => {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               disabled={isSubmitting}
-              className={`w-full py-3 px-6 rounded-lg font-medium text-white transition-all ${isSubmitting ? 'bg-purple-700' : 'bg-gradient-to-r from-purple-600 to-blue-600 hover:shadow-lg hover:shadow-purple-500/30'}`}
+              className={`w-full py-3 px-6 rounded-lg font-medium text-white transition-all ${isSubmitting ? 'bg-purple-700' : 'bg-gradient-to-r from-[#ee92c9] to-[#ddf684] hover:shadow-lg hover:shadow-purple-500/30'}`}
             >
               {isSubmitting ? (
                 <span className="flex items-center justify-center">

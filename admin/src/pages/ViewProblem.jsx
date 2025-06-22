@@ -30,13 +30,13 @@ const ViewProblem = () => {
           <DetailSection title="Output Format" content={problem.outputFormat} />
           <DetailSection title="Constraints" content={problem.constraints} />
 
-          {problem.sampleTests?.length > 0 && (
+          {problem.samples?.length > 0 && (
             <div>
               <h2 className="text-xl font-semibold mb-2 text-indigo-600 dark:text-indigo-300">
                 Sample Test Cases
               </h2>
               <div className="space-y-4">
-                {problem.sampleTests.map((test, idx) => (
+                {problem.samples.map((test, idx) => (
                   <div
                     key={idx}
                     className="bg-gray-100 dark:bg-gray-700 rounded-lg px-4 py-3 shadow-inner"
@@ -89,7 +89,7 @@ const DetailSection = ({ title, content }) => (
     <h2 className="text-xl font-semibold text-indigo-600 dark:text-indigo-300 mb-1">
       {title}
     </h2>
-    <p className="pl-2 whitespace-pre-wrap break-words">{content}</p>
+    <p className="pl-2 whitespace-pre-wrap break-words">{content || '—'}</p>
   </div>
 );
 

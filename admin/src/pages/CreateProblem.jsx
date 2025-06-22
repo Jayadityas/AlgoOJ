@@ -38,7 +38,7 @@ const CreateProblem = () => {
   const [testCaseZip, setTestCaseZip] = useState(null);
   const [isUploadingZip, setIsUploadingZip] = useState(false);
   const [activeSection, setActiveSection] = useState(0);
-  const {problems,getProblems} = useContext(AdminContext);
+  const {Problems,getProblems} = useContext(AdminContext);
 
   const inputRef = useRef(null);
   const outputRef = useRef(null);

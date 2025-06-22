@@ -3,7 +3,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import { toast } from "react-toastify";
 import { Menu, X } from "lucide-react"; // ✅ Icons added
-import logo from "../assets/logo.jpg";
+import logo from "../assets/logo.png";
 import LogoutButton from "./LogoutButton";
 
 const Navbar = () => {
@@ -17,7 +17,11 @@ const Navbar = () => {
     { name: "Leaderboard", path: "/leaderboard" },
     { name: "Contact", path: "/contact" },
     { name: "About", path: "/about" },
-    { name: "Admin", path: `${import.meta.env.VITE_ADMIN_URL}/login` },
+      {
+    name: "Admin",
+    path: import.meta.env.VITE_ADMIN_URL || "http://localhost:5173", 
+    external: true
+  },
   ];
 
   const onSubmitHandler = () => {
@@ -33,7 +37,7 @@ const Navbar = () => {
         to={path}
         className={({ isActive }) =>
           `relative group text-lg font-medium transition-colors duration-300 ${
-            isActive ? "text-violet-500" : "text-violet-400"
+            isActive ? "text-green-500" : "text-yellow-400"
           }`
         }
       >
@@ -41,7 +45,7 @@ const Navbar = () => {
           <>
             {name}
             <span
-              className={`absolute left-0 -bottom-1 h-[2px] bg-violet-500 transition-all duration-300 ${
+              className={`absolute left-0 -bottom-1 h-[2px] bg-pink-500 transition-all duration-300 ${
                 isActive ? "w-full" : "w-0 group-hover:w-full"
               }`}
             />
@@ -53,7 +57,7 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="w-full h-16 px-6 py-4 flex items-center justify-between backdrop-blur-md bg-white/10 dark:bg-gray-900/30 border-b border-white/20 dark:border-gray-700 shadow-md fixed z-40 transition-all duration-300">
+      <nav className="w-full h-16 px-6 py-4 flex items-center justify-between backdrop-blur-md bg-blue dark:bg-green border-b border-white/20 dark:border-gray-700 shadow-md fixed z-40 transition-all duration-300">
         {/* Logo */}
         <div className="flex items-center space-x-3">
           <img
@@ -63,7 +67,7 @@ const Navbar = () => {
             className="h-10 w-10 rounded-full cursor-pointer hover:scale-105 transition duration-300"
           />
           <span className="text-2xl font-bold text-gray-300 dark:text-white">
-            THE <span className="text-violet-400">OJ</span>
+          <span className="text-pink">Algo Online Judge</span>
           </span>
         </div>
 
@@ -168,7 +172,7 @@ const Navbar = () => {
                 setIsSidebarOpen(false);
                 navigate("/login");
               }}
-              className="w-full py-2 font-semibold rounded-lg bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white hover:scale-105 transition-all duration-300 shadow-md"
+              className="w-full py-2 font-bold rounded-lg bg-gradient-to-r from-red-500 via-white to-yellow-500 text-white hover:scale-105 transition-all duration-300 shadow-md"
             >
               Login
             </button>

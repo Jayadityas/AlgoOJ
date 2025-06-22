@@ -30,9 +30,9 @@ const cardVariants = {
 
 export default function AnimatedCards() {
   return (
-    <section className="py-20 px-4 dark:bg-gray-900 bg-[#07034d]">
+    <section className="py-20 px-4 bg-gradient-to-b from-[#14ec0c] to-[#01c4fa]">
       <h2 className="text-3xl font-bold text-center mb-12 dark:text-white text-white">
-        Why Choose <span className="text-purple-400">THE OJ ?</span >
+        Why go for <span className="text-[#df30a9]">Algo Online Judge ?</span >
       </h2>
 
       <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">

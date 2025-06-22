@@ -127,14 +127,14 @@ const Problems = () => {
   // Loading Screen Component - Same as other pages
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#07034d] to-[#1e0750] flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#ff0d6a] to-[#fffb04] flex items-center justify-center">
         <div className="text-center">
           {/* Golden Spinning Circle */}
           <div className="w-16 h-16 border-4 border-yellow-400/30 border-t-yellow-400 rounded-full animate-spin mx-auto mb-4"></div>
           
           {/* Loading Text */}
-          <h2 className="text-xl font-semibold text-amber-400 mb-2">Loading Challenges</h2>
-          <p className="text-indigo-200 text-sm">Please wait while we fetch the latest coding problems...</p>
+          <h2 className="text-xl font-semibold text-[#11136b] mb-2">Loading Challenges</h2>
+          <p className="text-[#0bd8e4] text-sm">Please wait while we fetch the latest coding problems...</p>
           
           {/* Optional: Animated dots */}
           <div className="flex justify-center mt-4 space-x-1">
@@ -148,7 +148,7 @@ const Problems = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#07034d] to-[#1e0750] py-30 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-[#07c9ff] to-[#ff04b8] py-30 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row">
         {/* Mobile Filter Button */}
         <div className="md:hidden mb-4">
@@ -165,7 +165,7 @@ const Problems = () => {
           <div className="w-full md:w-56 flex-shrink-0 md:mr-6 mb-6 md:mb-0">
             <div className="bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 p-2 md:mt-25">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-sm font-bold text-amber-400 flex items-center gap-2">
+                <h2 className="text-sm font-bold text-[#b90707] flex items-center gap-2">
                   <FiFilter /> Filters
                 </h2>
                 {(selectedDifficulty || selectedTags.length > 0) && (
@@ -180,7 +180,7 @@ const Problems = () => {
 
               {/* Difficulty Filter */}
               <div className="mb-4">
-                <h3 className="text-xs font-semibold text-indigo-200 mb-2">DIFFICULTY</h3>
+                <h3 className="text-xs font-semibold text-[#f620ad] mb-2">DIFFICULTY</h3>
                 <div className="space-y-2">
                   {['easy', 'medium', 'hard'].map(difficulty => (
                     <button
@@ -191,7 +191,7 @@ const Problems = () => {
                       className={`w-full text-xs font-medium px-3 py-1 rounded-full border transition-all ${
                         selectedDifficulty === difficulty 
                           ? getTagColor(difficulty) + ' shadow-md'
-                          : 'bg-gray-800/50 text-gray-300 border-gray-600 hover:bg-gray-700/50'
+                          : 'bg-[#69fa0e] text-[#240efa] border-gray-600 hover:bg-gray-700/50'
                       }`}
                     >
                       {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}
@@ -202,14 +202,14 @@ const Problems = () => {
 
               {/* Tags Filter */}
               <div>
-                <h3 className="text-xs font-semibold text-indigo-200 mb-2">TOPICS</h3>
+                <h3 className="text-xs font-semibold text-[#f620ad] mb-2">TOPICS</h3>
                 <div className="relative">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       setIsTagsDropdownOpen(!isTagsDropdownOpen);
                     }}
-                    className="w-full flex items-center justify-between bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 border border-gray-600 rounded-lg px-3 py-1.5 text-xs transition-colors"
+                    className="w-full flex items-center justify-between bg-[#69fa0e] text-[#240efa] border-gray-600 hover:bg-gray-700/50' rounded-lg px-3 py-1.5 text-xs transition-colors"
                   >
                     <span className="truncate">
                       {selectedTags.length > 0 
@@ -281,7 +281,7 @@ const Problems = () => {
         <div className="flex-1">
           {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-extrabold text-amber-400 sm:text-3xl mb-2">
+            <h1 className="text-2xl font-extrabold text-[#c3fb18] sm:text-3xl mb-2">
               Coding Challenges
             </h1>
             <p className="text-sm text-indigo-200">
@@ -363,7 +363,7 @@ const Problems = () => {
               <div className="text-center py-8 bg-white/5 rounded-lg border border-white/10">
                 <div className="inline-flex items-center justify-center w-12 h-12 bg-indigo-100/10 rounded-full mb-2">
                   <svg
-                    className="w-6 h-6 text-indigo-300"
+                    className="w-6 h-6 text-[#60ebf1]"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -380,7 +380,7 @@ const Problems = () => {
                 <h3 className="text-base font-medium text-white mb-1">
                   No problems found
                 </h3>
-                <p className="text-indigo-200 text-xs">
+                <p className="text-white text-xs">
                   {selectedDifficulty || selectedTags.length > 0
                     ? "Try adjusting your filters" 
                     : "Check back later for new challenges"}

@@ -1,6 +1,6 @@
-import express from 'express'
-import nodemailer from 'nodemailer'
-import dotenv from 'dotenv'
+import nodemailer from 'nodemailer';
+import dotenv from 'dotenv';
+
 dotenv.config();
 
 const contact = async (req, res) => {
@@ -14,28 +14,29 @@ const contact = async (req, res) => {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: process.env.EMAIL_USER, // Your Gmail
-        pass: process.env.EMAIL_PASS  // App password
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
       }
     });
 
     const mailOptions = {
-      from: email,
+      from: `"${name}" <${email}>`,
       to: process.env.EMAIL_USER,
-      subject: `New Contact from ${name}`,
+      subject: `New Contact Message from ${name}`,
       html: `
         <p><strong>Name:</strong> ${name}</p>
+        <p><strong>Email:</strong> ${email}</p>
         <p><strong>Message:</strong><br/>${message}</p>
       `
     };
 
     await transporter.sendMail(mailOptions);
-    res.json({ success: true, message: 'Message sent successfully!' });
 
+    res.json({ success: true, message: 'Message sent successfully!' });
   } catch (error) {
-    console.error("Email sending error:", error);
+    console.error("Email sending error:", error.message);
     res.status(500).json({ success: false, message: 'Failed to send message' });
   }
-}
+};
 
-export default contact
+export default contact;

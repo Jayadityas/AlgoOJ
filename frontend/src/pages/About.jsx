@@ -7,13 +7,13 @@ const About = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="min-h-screen px-4 py-20 bg-gradient-to-br from-[#07034d] to-[#1e0750]"
+      className="min-h-screen px-4 py-20 bg-gradient-to-br from-[#df0724ef] to-[#50e20d]"
     >
       {/* Floating background elements */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-32 h-32 rounded-full bg-purple-500/10 blur-3xl"></div>
-        <div className="absolute bottom-1/3 right-1/3 w-40 h-40 rounded-full bg-blue-500/10 blur-3xl"></div>
-        <div className="absolute top-1/3 right-1/4 w-28 h-28 rounded-full bg-indigo-500/10 blur-3xl"></div>
+        <div className="absolute top-1/4 left-1/4 w-32 h-32 rounded-full bg-yellow-500/10 blur-3xl"></div>
+        <div className="absolute bottom-1/3 right-1/3 w-40 h-40 rounded-full bg-red-500/10 blur-3xl"></div>
+        <div className="absolute top-1/3 right-1/4 w-28 h-28 rounded-full bg-purple-500/10 blur-3xl"></div>
       </div>
 
       <motion.div 
@@ -22,7 +22,7 @@ const About = () => {
         transition={{ duration: 0.6 }}
         className="max-w-5xl mx-auto bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl shadow-2xl overflow-hidden"
       >
-        <div className="p-8 sm:p-10 space-y-8">
+        <div className="p-8 sm:p-10 space-y-10">
           {/* Header Section */}
           <motion.div
             initial={{ scale: 0.95 }}
@@ -30,17 +30,17 @@ const About = () => {
             transition={{ duration: 0.5 }}
             className="text-center space-y-4"
           >
-            <h1 className="text-4xl sm:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-blue-500">
-              About THE OJ
+            <h1 className="border-2 text-4xl sm:text-5xl  font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-green-500">
+             Algo Online judge
             </h1>
-            <div className="mt-2 h-1 w-20 bg-gradient-to-r from-purple-500 to-blue-500 mx-auto rounded-full"></div>
+            <div className="mt-2 h-1 w-20 bg-gradient-to-r from-green-500 to-yellow-500 mx-auto rounded-full"></div>
             <motion.p 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
               className="text-gray-300 text-lg max-w-3xl mx-auto"
             >
-              Welcome to <span className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-violet-300">THE OJ</span> – your go-to online judge platform built by developers, for developers.
+              <span className="font-bold  bg-clip-text bg-gradient-to-r from-blue-300 to-red-300">The online judge</span> – the fast compiler + judge system for problem solvers .
             </motion.p>
           </motion.div>
 
@@ -62,12 +62,12 @@ const About = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
                 </div>
-                <h2 className="text-2xl font-semibold text-white">Our Mission</h2>
+                <h2 className="text-2xl font-italic text-blue-500">Ultimate Goal</h2>
               </div>
-              <p className="text-gray-300">
+              <p className="text-white">
                 We aim to make coding accessible and enjoyable by providing a streamlined interface for submitting, testing, and evaluating solutions to algorithmic problems in real time.
               </p>
-              <p className="text-gray-300">
+              <p className="text-white">
                 Whether you're preparing for interviews, contests, or just want to grow your problem-solving skills — THE OJ is here to help.
               </p>
             </motion.div>
@@ -83,9 +83,9 @@ const About = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
                   </svg>
                 </div>
-                <h2 className="text-2xl font-semibold text-white">What Makes Us Different</h2>
+                <h2 className="text-2xl font-italic text-blue-500">What Makes Us Different</h2>
               </div>
-              <ul className="space-y-3">
+              <ul className="space-y-3 text-white">
                 {[
                   "Clean, minimal, and intuitive interface",
                   "Real-time result feedback and runtime analysis",
@@ -114,12 +114,12 @@ const About = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
-                <h2 className="text-2xl font-semibold text-white">Our Vision</h2>
+                <h2 className="text-2xl font-italic text-blue-500">Our Vision</h2>
               </div>
-              <p className="text-gray-300">
+              <p className="text-white">
                 To build a collaborative and open-source platform that not only supports problem solving but encourages community contribution and learning.
               </p>
-              <p className="text-gray-300">
+              <p className="text-white">
                 We believe in building a space where every learner can grow — with confidence, creativity, and curiosity.
               </p>
             </motion.div>
@@ -135,12 +135,12 @@ const About = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                   </svg>
                 </div>
-                <h2 className="text-2xl font-semibold text-white">Our Team</h2>
+                <h2 className="text-2xl font-italic text-blue-500">Our Team</h2>
               </div>
-              <p className="text-gray-300">
+              <p className="text-white">
                 THE OJ is developed and maintained by a passionate group of developers and educators who understand the challenges of coding education and want to make it better for everyone.
               </p>
-              <p className="text-gray-300">
+              <p className="text-white">
                 We constantly evolve based on user feedback — because your journey is our priority.
               </p>
             </motion.div>
@@ -153,13 +153,13 @@ const About = () => {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
           >
-            <h3 className="text-xl font-semibold text-white mb-3">Ready to start solving?</h3>
-            <p className="text-gray-300 mb-6 max-w-lg mx-auto">Create an account and join the coding revolution today.</p>
+           
+            <p className=" font-italic text-white mb-6 max-w-lg mx-auto">Create an account and join the coding revolution today.</p>
             <motion.a
               href="/"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="inline-flex items-center justify-center px-8 py-3.5 text-base font-medium rounded-full text-white bg-gradient-to-r from-purple-600 to-blue-600 hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-300"
+              className="inline-flex items-center justify-center px-8 py-3.5 text-base font-medium rounded-full text-white bg-gradient-to-r from-pink-600 to-blue-600 hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-300"
             >
               Go to Home
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">

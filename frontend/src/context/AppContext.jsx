@@ -11,7 +11,7 @@ const AppContextProvider = (props) => {
     const [problems, setProblems] = useState([])
     const backendUrl = import.meta.env.VITE_BACKEND_URL
     const adminUrl = import.meta.env.VITE_ADMIN_URL
-
+   console.log("Backend URL is: ", backendUrl);
     const getUserData = async () => {
 
         try {
@@ -22,7 +22,7 @@ const AppContextProvider = (props) => {
                 setUserData(data.user)
             }
             else {
-                toast.error(error.message)
+                toast.error(data.message)
             }
         } catch (error) {
             console.log(error)
@@ -42,7 +42,7 @@ const AppContextProvider = (props) => {
             }
             else {
                 setProblems([])
-                toast.error(error.message)
+                toast.error(data.message)
             }
         } catch (error) {
             console.log(error)

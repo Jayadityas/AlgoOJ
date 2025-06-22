@@ -113,9 +113,9 @@ const getAllProblems = async (req, res) => {
 
     try {
         const problems = await Problem.find().select('-hiddenTests');       //sending only the just required data to the client not sending the complete data due to security reasons since the problem has hiddenTests and other sensitive data
-        if(problems.length === 0) {
-            return res.status(404).json({ success: false, message: 'No problems found!' })
-        }
+     if (problems.length === 0) {
+  return res.status(200).json({ success: true, problems: [] });
+}
         else res.status(200).json({ success: true, problems })
 
     } 

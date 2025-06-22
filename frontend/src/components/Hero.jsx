@@ -1,16 +1,16 @@
 import { motion } from "framer-motion";
-import heroIcon from "../assets/heroIcon.png"; // Replace with your own image
+import heroIcon from "../assets/frimage.webp"; // Replace with your own image
 import { useNavigate } from 'react-router-dom';
 
 export default function Hero() {
   const navigate = useNavigate();
   
   return (
-    <section className="w-full dark:bg-gray-950 py-35 px-4 bg-[#07034d] relative overflow-hidden">
+    <section className="w-full dark:bg-white-950 py-35 px-4 bg-[#ff025b] relative overflow-hidden">
       {/* Grid Background */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute inset-0 bg-grid-white/[0.05] dark:bg-grid-gray-800/[0.2]">
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#07034d] dark:to-gray-950"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#14ec0c] dark:to-gray-950"></div>
         </div>
         
         {/* Animated floating elements */}
@@ -68,7 +68,7 @@ export default function Hero() {
             transition={{ delay: 0.2 }}
             className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight text-amber-300 dark:text-white"
           >
-            Master Competitive Coding on{" "}
+            Start your programming journey with us{" "}
             <motion.span 
               className="text-purple-400"
               animate={{
@@ -83,7 +83,7 @@ export default function Hero() {
                 repeat: Infinity
               }}
             >
-              THE OJ
+              now !!
             </motion.span>
           </motion.h1>
           
@@ -93,7 +93,7 @@ export default function Hero() {
             transition={{ delay: 0.4 }}
             className="mt-6 text-lg md:text-xl text-white dark:text-gray-300 max-w-2xl"
           >
-            A modern online judge platform for problem-solving, contests, and learning — fast and reliable.
+           Your companion for guiding you into the mesmerizing world of problem solving.
           </motion.p>
 
           <motion.div
@@ -106,7 +106,7 @@ export default function Hero() {
               onClick={()=>navigate('/login')}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.75 }}
-              className="px-8 py-3  rounded-full bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold text-lg hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-300 relative overflow-hidden group  border-transparent hover:border-white animate-borderMove"
+              className="px-8 py-3  rounded-full bg-gradient-to-r from-green-600 to-yellow-500 text-white font-semibold text-lg hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-300 relative overflow-hidden group  border-transparent hover:border-white animate-borderMove"
             >
               <span className="relative z-10">Get Started</span>
               <span className="absolute inset-0 bg-gradient-to-r from-purple-700 to-pink-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
@@ -116,7 +116,7 @@ export default function Hero() {
               onClick={() => navigate('/problems')}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="px-8 py-3 rounded-full bg-transparent border-2 border-purple-400 text-white font-semibold text-lg hover:bg-purple-500/20 transition-all duration-300 relative overflow-hidden group  hover:border-white animate-borderMove"
+              className="px-8 py-3  rounded-full bg-gradient-to-r from-green-600 to-yellow-500 text-white font-semibold text-lg hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-300 relative overflow-hidden group  border-transparent hover:border-white animate-borderMove"
             >
               <span className="relative z-10">View Problems</span>
               <span className="absolute inset-0 bg-gradient-to-r from-purple-400/20 to-pink-300/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300  border-transparent hover:border-white animate-borderMove"></span>

@@ -54,7 +54,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#07034d] to-[#1e0750] p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#e21370] via-[#264ba2] to-[#12ebd1] p-4">
       <div className="w-100 max-w-md">
         {/* Animated Card */}
         <div className="relative bg-white/5 backdrop-blur-lg rounded-2xl shadow-xl overflow-hidden border border-white/10 transition-all duration-300 hover:shadow-2xl mt-20">
@@ -67,9 +67,7 @@ const Login = () => {
               <h2 className="text-3xl font-bold text-white mb-2">
                 {state === 'login' ? 'Welcome Back' : 'Create Account'}
               </h2>
-              <p className="text-white/70">
-                {state === 'login' ? 'Login to continue your journey' : 'Join us to get started'}
-              </p>
+            
             </div>
 
             <form className="space-y-5">
@@ -128,7 +126,7 @@ const Login = () => {
                 onClick={onSubmitHandler}
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-gradient-to-r from-violet-600 to-pink-500 text-white py-3 rounded-lg cursor-pointer font-semibold hover:opacity-90 transition duration-300 flex items-center justify-center"
+                className="w-full bg-gradient-to-r from-[#63f6f2] via-[#e8f382] to-[#f893f0] text-[#f31d7b] py-3 rounded-lg cursor-pointer font-semibold hover:opacity-90 transition duration-300 flex items-center justify-center"
               >
                 {isLoading ? (
                   <>

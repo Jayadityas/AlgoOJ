@@ -44,14 +44,14 @@ const LeaderBoard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#07034d] to-[#1e0750] flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#e61c9c] to-[#bdec30] flex items-center justify-center">
         <div className="text-center">
           {/* Golden Spinning Circle */}
           <div className="w-16 h-16 border-4 border-yellow-400/30 border-t-yellow-400 rounded-full animate-spin mx-auto mb-4"></div>
           
           {/* Loading Text */}
-          <h2 className="text-xl font-semibold text-amber-400 mb-2">Loading Leaderboard</h2>
-          <p className="text-indigo-200 text-sm">Please wait while we fetch the leaderboard...</p>
+          <h2 className="text-xl font-semibold text-[#88274f] mb-2">Loading Leaderboard</h2>
+          <p className="text-[#88274f] text-sm">Please wait while we fetch the leaderboard...</p>
           
           {/* Optional: Animated dots */}
           <div className="flex justify-center mt-4 space-x-1">
@@ -65,14 +65,14 @@ const LeaderBoard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#07034d] to-[#1a0b4e] text-white py-25 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-[#3017e6] via-[#c8e879] to-[#f01ba9] text-white py-25 px-4">
       <div className="text-center mb-12">
         <div className="flex items-center justify-center gap-4">
           <FaCrown className="text-yellow-400 text-3xl animate-bounce" />
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-yellow-300 via-yellow-400 to-amber-500 bg-clip-text text-transparent drop-shadow">Leaderboard</h1>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-[#44ee06] via-[#f40e8e] to-[#f4260e] bg-clip-text text-transparent drop-shadow">Leaderboard</h1>
           <HiSparkles className="text-yellow-400 text-3xl animate-pulse" />
         </div>
-        <p className="text-gray-300 mt-2">Celebrating our coding champions</p>
+        <p className="text-white mt-2">Celebrating our coding champions</p>
       </div>
 
       <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

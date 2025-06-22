@@ -17,10 +17,18 @@ const Myprofile = () => {
   const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
+    setForm({
+      username: adminData?.username || '',
+      email: adminData?.email || ''
+    });
     if (adminData?.profileImage) {
       setPreview(adminData.profileImage);
     }
   }, [adminData]);
+
+  const isUnchanged = form.username === adminData.username &&
+                      form.email === adminData.email &&
+                      !image;
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -28,6 +36,7 @@ const Myprofile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isUnchanged) return;
     setIsUploading(true);
 
     const formData = new FormData();
@@ -124,10 +133,7 @@ const Myprofile = () => {
         >
           <div className="flex flex-col md:flex-row gap-8 items-start md:items-center justify-between">
             {/* Profile Image Section */}
-            <motion.div 
-              whileHover={{ scale: 1.02 }}
-              className="flex flex-col items-center gap-4"
-            >
+            <motion.div whileHover={{ scale: 1.02 }} className="flex flex-col items-center gap-4">
               <div className="relative group">
                 {preview && (
                   <motion.img
@@ -172,10 +178,10 @@ const Myprofile = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={handleSubmit}
-                disabled={isUploading}
+                disabled={isUnchanged || isUploading}
                 className={`px-6 py-2 rounded-lg shadow-lg transition-all duration-300 ${
-                  isUploading 
-                    ? 'bg-gray-500 cursor-not-allowed' 
+                  isUnchanged || isUploading
+                    ? 'bg-gray-500 cursor-not-allowed'
                     : 'bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 text-white'
                 }`}
               >
@@ -188,162 +194,11 @@ const Myprofile = () => {
                     Uploading...
                   </span>
                 ) : (
-                  'Upload Image'
+                  image ? 'Upload Image' : 'Save Changes'
                 )}
               </motion.button>
             </motion.div>
-
-            {/* Profile Info Section */}
-            {!editing ? (
-              <motion.div 
-                initial={{ x: 20, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ duration: 0.5 }}
-                className="space-y-4 flex-1"
-              >
-                <div className="space-y-2">
-                  <p className="text-xl font-semibold text-white">
-                    <span className="text-indigo-300 mr-2">👤</span> 
-                    <span className="text-gray-300">Name:</span> 
-                    <span className="ml-2 text-white">{adminData.username}</span>
-                  </p>
-                  <p className="text-lg text-gray-300">
-                    <span className="text-indigo-300 mr-2">📧</span> 
-                    <span className="text-gray-300">Email:</span> 
-                    <span className="ml-2 text-white">{adminData.email}</span>
-                  </p>
-                  <p className="text-md text-gray-300">
-                    <span className="text-indigo-300 mr-2">📈</span> 
-                    <span className="text-gray-300">Submissions:</span> 
-                    <span className="ml-2 text-white">{adminData.submissionsCount}</span>
-                  </p>
-                </div>
-                <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                  onClick={() => setEditing(true)}
-                  className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 py-2.5 rounded-lg shadow-lg transition-all duration-300 flex items-center"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                  </svg>
-                  Edit Profile
-                </motion.button>
-              </motion.div>
-            ) : (
-              <motion.form 
-                initial={{ x: 20, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ duration: 0.5 }}
-                onSubmit={handleSubmit} 
-                className="space-y-6 w-full md:w-2/3"
-              >
-                <div>
-                  <label className="block text-sm font-medium mb-2 text-indigo-300">Name</label>
-                  <input
-                    name="username"
-                    value={form.username}
-                    onChange={handleChange}
-                    className="w-full bg-white/5 border border-white/10 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-white placeholder-gray-400 transition-all"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2 text-indigo-300">Email</label>
-                  <input
-                    name="email"
-                    type="email"
-                    value={form.email}
-                    onChange={handleChange}
-                    className="w-full bg-white/5 border border-white/10 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-white placeholder-gray-400 transition-all"
-                    required
-                  />
-                </div>
-                <div className="flex gap-4">
-                  <motion.button
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.97 }}
-                    type="submit"
-                    className="bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 text-white px-6 py-2.5 rounded-lg shadow-lg transition-all duration-300 flex items-center"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    Save Changes
-                  </motion.button>
-                  <motion.button
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.97 }}
-                    type="button"
-                    onClick={() => setEditing(false)}
-                    className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-6 py-2.5 rounded-lg shadow-lg transition-all duration-300 flex items-center"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                    Cancel
-                  </motion.button>
-                </div>
-              </motion.form>
-            )}
           </div>
-        </motion.div>
-
-        {/* My Submissions Section */}
-        <motion.div
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.2, duration: 0.5 }}
-        >
-          <h2 className="text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-amber-500 mb-6">
-            📝 My Submissions
-          </h2>
-          <motion.div 
-            whileHover={{ scale: 1.005 }}
-            className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl shadow-lg p-6 space-y-4 transition-all duration-300"
-          >
-            {adminData.solvedProblems && adminData.solvedProblems.length > 0 ? (
-              adminData.solvedProblems.map((prob, idx) => (
-                <motion.div
-                  key={idx}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: idx * 0.1 }}
-                  className="flex items-center justify-between py-3 px-4 bg-white/5 rounded-lg hover:bg-white/10 transition-colors duration-300"
-                >
-                  <div className="flex items-center">
-                    <div className="mr-4 text-indigo-400 font-bold">{idx + 1}.</div>
-                    <span className="text-white font-medium">✅ {prob.title}</span>
-                  </div>
-                  <div className="text-xs text-indigo-300 bg-indigo-900/30 px-2 py-1 rounded-full">
-                    Solved
-                  </div>
-                </motion.div>
-              ))
-            ) : (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.3 }}
-                className="text-center py-8"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <p className="text-gray-400 italic">
-                  No submissions yet. Start solving problems to see them here!
-                </p>
-                <motion.a
-                  href="/problems"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="inline-block mt-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-2 rounded-lg shadow-lg transition-all duration-300"
-                >
-                  Browse Problems
-                </motion.a>
-              </motion.div>
-            )}
-          </motion.div>
         </motion.div>
       </div>
     </motion.div>

@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken'
 import cloudinary from '../config/cloudinary.js'
 import sendEmail from '../service/sendEmail.js'
 import Problem from '../model/problemModel.js'
-
+import fs from 'fs'
 
 const registerUser = async (req, res) => {
 
@@ -53,7 +53,7 @@ const registerUser = async (req, res) => {
 
     } catch (error) {
         console.error('Error registering user:', error);
-        res.status(500).json({ success: false, message: 'User Registration failed!' });
+        res.status(500).json({ success: false, message: error.message || 'User Registration failed!' });
     }
 }
 
@@ -120,43 +120,33 @@ const getUserProfile = async (req, res) => {
     }
 }
 
-const updateUserProfile = async (req, res) => {
+ const updateUserProfile = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user?.id;
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
+
     const { username, email } = req.body;
 
-    let profileImageUrl;
+    const updatedData = { username, email };
 
-    // If file is uploaded
     if (req.file) {
-      const result = await cloudinary.uploader.upload(req.file.path, {
-        folder: 'uploadsProfile',
-      });
-
-      profileImageUrl = result.secure_url;
-
+      updatedData.profileImage = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
     }
 
-    const updateData = {
-      ...(username && { username }),
-      ...(email && { email }),
-      ...(profileImageUrl && { profileImage: profileImageUrl }),
-    };
-
-    const updatedUser = await User.findByIdAndUpdate(userId, updateData, {
+    const updatedUser = await User.findByIdAndUpdate(userId, updatedData, {
       new: true,
-    }).select('-password');
+    }).select("-password");
 
-    res.status(200).json({
-      message: 'Profile updated successfully',
-      updatedUser,
-    });
-  } catch (err) {
-    console.error('Update error:', err);
-    res.status(500).json({ message: 'Server error' });
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({ success: true, updatedUser });
+  } catch (error) {
+    console.error("Update profile error:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
-
 
 const forgotPassword = async (req, res) => {
   const { email } = req.body;

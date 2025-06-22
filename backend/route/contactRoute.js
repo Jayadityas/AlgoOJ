@@ -1,11 +1,11 @@
 import express from 'express';
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
-import contact from '../controller/contactController.js';
+import contactController from '../controller/contactController.js';
 
-dotenv.config();
 const contactRouter = express.Router();
 
-contactRouter.post('/', contact);
+contactRouter.post('/contact', contactController);
 
+dotenv.config();
 export default contactRouter;
