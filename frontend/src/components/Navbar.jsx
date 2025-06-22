@@ -19,7 +19,7 @@ const Navbar = () => {
     { name: "About", path: "/about" },
       {
     name: "Admin",
-    path: import.meta.env.VITE_ADMIN_URL || "http://localhost:5173", 
+    path: import.meta.env.VITE_ADMIN_URL || "http://localhost:5174", 
     external: true
   },
   ];
