@@ -33,31 +33,32 @@ AlgoOJ is a full-stack Online Judge (OJ) platform built from scratch that allows
 
 ✨ ##Features
 ---
-##🔥 Code Editor with Monaco (VS Code experience), supporting C++, Python, and JavaScript.
+🔥 Code Editor with Monaco (VS Code experience), supporting C++, Python, and JavaScript.
 
-##📝 Dynamic problem page with Markdown descriptions, constraints, sample inputs/outputs.
+📝 Dynamic problem page with Markdown descriptions, constraints, sample inputs/outputs.
 
-##✅ Run & Submit: Users can run code against custom input, or submit to validate against test cases.
+✅ Run & Submit: Users can run code against custom input, or submit to validate against test cases.
 
-##🚀 AI Code Review (via Gemini or GPT): get instant feedback on code quality (limited tries per day).
+🚀 AI Code Review (via Gemini or GPT): get instant feedback on code quality (limited tries per day).
 
-##🧑‍💻 Authentication & Profiles: Users can sign up, log in, and track submissions.
+🧑‍💻 Authentication & Profiles: Users can sign up, log in, and track submissions.
 
-##🗃️ Admin Panel: Add problems, manage test cases and see submission analytics.
+🗃️ Admin Panel: Add problems, manage test cases and see submission analytics.
 
-##⚡ Dockerized Compiler Microservice: isolates code execution safely with time/memory limits.
+⚡ Dockerized Compiler Microservice: isolates code execution safely with time/memory limits.
 
-##🗄️ MongoDB Backend: stores users, problems, and submission history.
+🗄️ MongoDB Backend: stores users, problems, and submission history.
 
 ---
 
-## 🧰 Tech Stack
+## 🚀 Tech Stack
 
 | Layer        | Technology                                      |
 |--------------|-------------------------------------------------|
-| Frontend     | React.js (Vite), Tailwind CSS, Monacco Editor   |
-| Backend      | Node.js, Express.js                             |
-| Database     | MongoDB (Mongoose)                              |
+| Frontend     | React, Tailwind CSS, Axios  |
+| Backend      | Node.js, Express, Mongoose                            |
+| Database     | 	MongoDB                              |
+| Compiler Service   | Node.js, Docker (runs inside safe container)         |
 | Code Runner  | Docker                                          |
 | Auth         | JWT + bcrypt                                    |
 | File Uploads | Multer                                          |
