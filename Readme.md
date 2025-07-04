@@ -17,9 +17,17 @@ AlgoOJ is a full-stack Online Judge (OJ) platform built from scratch that allows
 |-------------------------------|----------------|
 | ![Image](https://github.com/user-attachments/assets/6d37e88b-89cd-4b4e-ab1e-5b03c0ad5332) | ![Image](https://github.com/user-attachments/assets/da649ed1-eda3-47a6-8fbc-475ebdb9a19d) |
 
-| Admin - Create / Update Problem | Auth (Login / Signup) |
+| Admin - Profile | Auth (Create account) |
 |-------------------------------|------------------------|
-| ![Admin](https://github.com/user-attachments/assets/208441bb-1bbe-4c75-af16-0f2feba1f54d) | ![Auth](https://github.com/user-attachments/assets/bab9ce09-3eb8-4289-9003-1e4d808b845b) |
+| ![Image](https://github.com/user-attachments/assets/511bb6cd-ae1a-4df7-a0c6-e2b221fbc811) | ![Image](https://github.com/user-attachments/assets/13f07599-0840-48e1-9e1a-7fb950b39048) |
+
+| Leaderboard | Contact Us |
+|-------------------------------|------------------------|
+| ![Image](https://github.com/user-attachments/assets/82bb0efb-ee9a-4be2-8008-ebff89f699b3) | ![Image](https://github.com/user-attachments/assets/438e7ad5-5365-43e3-a254-c825bf654ddb) |
+
+| About | Admin Statistics dashboard |
+|-------------------------------|------------------------|
+| ![Image](https://github.com/user-attachments/assets/f566bc3c-7724-4511-93cd-f5e5355bcf2d) | ![Image](https://github.com/user-attachments/assets/84f6a735-8175-44d5-b7b1-454c56e921c4) |
 
 ---
 
