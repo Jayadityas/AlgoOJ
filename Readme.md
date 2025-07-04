@@ -11,7 +11,7 @@ AlgoOJ is a full-stack Online Judge (OJ) platform built from scratch that allows
 
 | Home / Explore Problems | Problem Page |
 |-------------------------|--------------|
-| ![Image](https://github.com/user-attachments/assets/b5a38579-179d-4034-a9ca-b802059da97e) | ![Problem](https://github.com/user-attachments/assets/e5b70dd5-0f4b-48d3-8972-06e73b5ef116) |
+| ![Image](https://github.com/user-attachments/assets/b5a38579-179d-4034-a9ca-b802059da97e) | ![Image](https://github.com/user-attachments/assets/71d9d61e-458a-475b-bbbb-a1902b0608b9) |
 
 | Code Editor + Submission Panel | My Submissions |
 |-------------------------------|----------------|
