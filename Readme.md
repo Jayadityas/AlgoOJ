@@ -81,3 +81,9 @@ MongoDB (or let Docker run it)
 ```bash
 # In the project root
 docker-compose up --build
+
+### 📦 Backend Setup (Dockerized)
+
+```bash
+# In the project root
+docker-compose up --build
