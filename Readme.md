@@ -125,4 +125,11 @@ npm run dev
         ├── output2.txt
 ```
 
+### 🚀 Future Improvements
+In my version 2.0 I will :
+Add time complexity analyzer with graphical representation.
+Integrate websocket-based live contests.
+Support more languages (Java, Go, Rust).
 
+### 📜 License
+MIT License
