@@ -31,7 +31,7 @@ Algo Online Judge is a full-stack Online Judge (OJ) platform built from scratch 
 
 ---
 
-✨ ##Features
+### ✨ Features
 ---
 🔥 Code Editor with Monaco (VS Code experience), supporting C++, Python, and JavaScript.
 
@@ -126,6 +126,7 @@ npm run dev
 ```
 ### 🚀 Future Improvements
 In my Algo OJ 2.0 : 
+
 🧮 I will add a time complexity analyzer
 
 🔌 I will integrate websocket-based live contests
