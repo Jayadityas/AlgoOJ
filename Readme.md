@@ -77,13 +77,15 @@ Docker & Docker Compose
 MongoDB (or let Docker run it)
 
 ### 📦 Backend Setup (Dockerized)
-
+<pre>
 ```bash
 # In the project root
 docker-compose up --build
+</pre>
 
 ### 📦 Backend Setup (Dockerized)
-
+<pre>
 ```bash
 # In the project root
 docker-compose up --build
+</pre>
