@@ -31,29 +31,22 @@ AlgoOJ is a full-stack Online Judge (OJ) platform built from scratch that allows
 
 ---
 
-## ⚙️ Features
+##✨ Features
+##🔥 Code Editor with Monaco (VS Code experience), supporting C++, Python, and JavaScript.
 
-### 👨‍🎓 User Panel
-- Browse and solve programming problems
-- Submit code in an interactive editor (CodeMirror)
-- View test case-wise feedback (passed/failed)
-- Maintain a submission history
+##📝 Dynamic problem page with Markdown descriptions, constraints, sample inputs/outputs.
 
-### 🛠️ Admin Panel
-- Create and update problems
-- Upload sample and hidden test cases (via file upload)
-- Toggle problem visibility
-- View all user submissions
+##✅ Run & Submit: Users can run code against custom input, or submit to validate against test cases.
 
-### 🔐 Authentication
-- Secure user login/signup with JWT
-- Passwords hashed using `bcrypt`
-- Protected admin routes
+##🚀 AI Code Review (via Gemini or GPT): get instant feedback on code quality (limited tries per day).
 
-### ⚙️ Code Execution Engine
-- Containerized code execution with Docker
-- Secure sandbox for running user-submitted code
-- Input/output validation and real-time feedback
+##🧑‍💻 Authentication & Profiles: Users can sign up, log in, and track submissions.
+
+##🗃️ Admin Panel: Add problems, manage test cases and see submission analytics.
+
+##⚡ Dockerized Compiler Microservice: isolates code execution safely with time/memory limits.
+
+##🗄️ MongoDB Backend: stores users, problems, and submission history.
 
 ---
 
