@@ -31,7 +31,8 @@ AlgoOJ is a full-stack Online Judge (OJ) platform built from scratch that allows
 
 ---
 
-##✨ Features
+✨ ##Features
+---
 ##🔥 Code Editor with Monaco (VS Code experience), supporting C++, Python, and JavaScript.
 
 ##📝 Dynamic problem page with Markdown descriptions, constraints, sample inputs/outputs.
