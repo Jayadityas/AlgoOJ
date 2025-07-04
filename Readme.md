@@ -124,15 +124,13 @@ npm run dev
         ├── output1.txt
         ├── output2.txt
 ```
-
 ### 🚀 Future Improvements
-In my version 2.0 I will :
----
-Add time complexity analyzer with graphical representation.
----
-Integrate websocket-based live contests.
----
-Support more languages (Java, Go, Rust).
+In my Algo OJ 2.0 : 
+🧮 I will add a time complexity analyzer
+
+🔌 I will integrate websocket-based live contests
+
+🌐 I will ensure that it will support more languages (Java, Go, Rust)
 
 ### 📜 License
 MIT License
