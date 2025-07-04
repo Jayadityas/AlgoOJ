@@ -76,17 +76,53 @@ Docker & Docker Compose
 
 MongoDB (or let Docker run it)
 
-### 📦 Backend Setup (Dockerized)
+### 📦 Clone & Install
 
 ```bash
-# In the project root
-docker-compose up --build
+git clone https://github.com/Jayadityas/AlgoOJ.git
+cd AlgoOJ
 ```
-
-### 📦 Backend Setup (Dockerized)
-
+### 🗄️ Environment Variables
+## In /backend/.env
 ```bash
-# In the project root
-docker-compose up --build
+PORT=3000
+MONGO_URL=mongodb://mongodb:27017/ojdatabase
+JWT_SECRET=your_secret_key
+GEMINI_API_KEY=your_gemini_key_here
 ```
+## In /compiler/.env
+```bash
+PORT=4000
+```
+## In /admin/.env
+```bash
+VITE_BACKEND_URL=http://localhost:3000
+```
+## In /frontend/.env
+```bash
+VITE_BACKEND_URL=http://localhost:3000
+VITE_COMPILER_URL=http://localhost:4000
+```
+### 🐳 Start Dockerized services
+```bash
+docker compose up --build
+```
+### 💻 Run Frontend
+```bash
+npm install
+npm run dev
+```
+### 🧪 Adding Problems
+```bash
+#Put test case files in this format
+/OJ-Project/testcases
+└── Add_two_numbers
+    ├── input
+    │   ├── input1.txt
+    │   ├── input2.txt
+    └── output
+        ├── output1.txt
+        ├── output2.txt
+```
+
 
