@@ -1,21 +1,17 @@
-# 🧑‍⚖️ THE OJ - Online Judge System
+# 🧑‍⚖️ THE ALGO ONLINE JUDGE
 
-THE OJ is a full-stack **Online Judge system** that allows users to solve coding problems with real-time code evaluation. It features a powerful admin dashboard for managing problems, test cases, and submissions — all built with a modern tech stack, fully containerized using Docker, and deployed on **Vercel (frontend)** and **AWS (backend)**.
-
----
+AlgoOJ is a full-stack Online Judge (OJ) platform built from scratch that allows users to solve algorithmic problems, write code in multiple languages, run it against custom inputs, and submit to validate against hidden test cases.It is inspired by platforms like LeetCode, HackerRank, and Codeforces, but designed with a lightweight, modern UI and our own customizable problem bank.
 
 ## 🌐 Live Demo
 
 - 🔗 Frontend (Vercel): [https://theoj.vercel.app](https://theoj.vercel.app)
 - 🔗 Backend (AWS): [https://api.theoj.online](https://api.theoj.online)
 
----
-
 ## 📸 Screenshots
 
 | Home / Explore Problems | Problem Page |
 |-------------------------|--------------|
-| ![Home](https://github.com/user-attachments/assets/44fbded0-51da-44d7-a841-a3ca243f5cbb) | ![Problem](https://github.com/user-attachments/assets/e5b70dd5-0f4b-48d3-8972-06e73b5ef116) |
+| ![Image](https://github.com/user-attachments/assets/b5a38579-179d-4034-a9ca-b802059da97e) | ![Problem](https://github.com/user-attachments/assets/e5b70dd5-0f4b-48d3-8972-06e73b5ef116) |
 
 | Code Editor + Submission Panel | My Submissions |
 |-------------------------------|----------------|
