@@ -47,6 +47,9 @@ const ProblemPage = () => {
   const [loading, setLoading] = useState(true);
   const [theme, setTheme] = useState('vs-dark');
 
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+const compilerUrl = import.meta.env.VITE_COMPILER_URL;
+
   const themeOptions = {
     'vs-dark': { 
       label: 'Dark (VS Code)', 
@@ -205,114 +208,82 @@ const ProblemPage = () => {
   }, [problemId, problems]);
 
   const handleSubmit = async () => {
-    setIsSubmitting(true);
-    try {
-      const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/submit`, {
-        username: userData?.username,
-        problemId,
-        code,
-        language,
-      }, {
-        headers: { token }
-      });
-      console.log(res.data.testCases)
-      setVerdict(res.data.verdict);
-      setOutput(res.data.output);
-      setExecutionTime(res.data.executionTime);
-      setMemoryUsage(Math.floor(Math.random() * 10) + 5);
-      if (res.data.failedTestCase) {
-        setTestCases([
-          {
-            ...res.data.failedTestCase,
-            passed: false,
-          },
-        ]);
-        setFailedTestCase(res.data.failedTestCase);
-      } else {
-        setTestCases([]);
-        setFailedTestCase(null);
-      }
-    } catch (error) {
-      toast.error('Submission failed');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleRun = async () => {
-    setIsRunning(true);
-    try {
-      const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/run`, {
-        code,
-        language,
-        problemId,
-        input: customInput ? customInput : null,
-      }, {
-        headers: { token }
-      });
-
-      setOutput(res.data.output);
-      setVerdict(res.data.verdict);
-      setExecutionTime(res.data.executionTime);
-      setMemoryUsage(res.data.memoryUsed);
+  setIsSubmitting(true);
+  try {
+    const res = await axios.post(`${backendUrl}/api/submit`, {
+      username: userData?.username,
+      problemId,
+      code,
+      language,
+    }, {
+      headers: { token }
+    });
+    setVerdict(res.data.verdict);
+    setOutput(res.data.output);
+    setExecutionTime(res.data.executionTime);
+    setMemoryUsage(Math.floor(Math.random() * 10) + 5);
+    if (res.data.failedTestCase) {
+      setTestCases([{ ...res.data.failedTestCase, passed: false }]);
+      setFailedTestCase(res.data.failedTestCase);
+    } else {
       setTestCases([]);
-      setVerdict(res.data.verdict);
-      setOutput(res.data.output);
-      setExecutionTime(res.data.executionTime);
-      setMemoryUsage(Math.floor(Math.random() * 10) + 5);
-
-      if (res.data.failedTestCase) {
-        setTestCases([
-          {
-            ...res.data.failedTestCase,
-            passed: res.data.failedTestCase.expectedOutput && res.data.failedTestCase.actualOutput === res.data.failedTestCase.expectedOutput ? true : false,
-          },
-        ]);
-        setRun(true);
-        console.log(run);
-        setFailedTestCase(res.data.failedTestCase);
-      } else {
-        setTestCases([]);
-        setFailedTestCase(null);
-      }
-
-    } catch (error) {
-      toast.error('Run failed');
-    } finally {
-      setIsRunning(false);
+      setFailedTestCase(null);
     }
-  };
+  } catch (error) {
+    toast.error('Submission failed');
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+ const handleRun = async () => {
+  setIsRunning(true);
+  try {
+    const res = await axios.post(`${compilerUrl}/`, {
+      code,
+      language,
+      input: customInput || '',
+    }, {
+      headers: { token }
+    });
+    setOutput(res.data.output);
+    setVerdict(res.data.verdict || (res.data.success ? 'Executed' : 'Error'));
+    setExecutionTime(res.data.executionTime);
+    setMemoryUsage(Math.floor(Math.random() * 10) + 5);
+    setTestCases([]);
+    if (!res.data.success) {
+      toast.error(res.data.error || 'Execution failed');
+    }
+  } catch (error) {
+    console.error(error);
+    toast.error('Run failed');
+  } finally {
+    setIsRunning(false);
+  }
+};
 
-  const handleAIReview = async () => {
-    if (aiReviewCount >= 2) {
-      setShowPlanPopup(true);
-      return;
-    }
-    setIsReviewing(true);
-    try {
-      const res = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/api/ai/review`,
-        {
-          code,
-          language,
-          problemId,
-          username: userData?.username,
-        },
-        {
-          headers: { token },
-        }
-      );
-      setAiReviewCount(prev => prev + 1);
-      setAiReviewResponse(res.data.review || 'No response received.');
-      
-      localStorage.setItem(`aiReviewLastDate-${problemId}`, new Date().toISOString());
-      toast.success('AI Review fetched successfully');
-    } catch (error) {
-      toast.error(error?.response?.data?.error || 'AI Review failed');
-    } finally {
-      setIsReviewing(false);
-    }
-  };
+ const handleAIReview = async () => {
+  if (aiReviewCount >= 2) {
+    setShowPlanPopup(true);
+    return;
+  }
+  setIsReviewing(true);
+  try {
+    const res = await axios.post(`${backendUrl}/api/ai/review`, {
+      code,
+      language,
+      problemId,
+      username: userData?.username,
+    }, { headers: { token }});
+    setAiReviewCount(prev => prev + 1);
+    setAiReviewResponse(res.data.review || 'No response received.');
+    localStorage.setItem(`aiReviewLastDate-${problemId}`, new Date().toISOString());
+    toast.success('AI Review fetched successfully');
+  } catch (error) {
+    toast.error(error?.response?.data?.error || 'AI Review failed');
+  } finally {
+    setIsReviewing(false);
+  }
+};
 
   // Loading Screen Component
   if (loading) {

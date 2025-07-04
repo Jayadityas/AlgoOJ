@@ -12,13 +12,15 @@ RUN npm install
 
 # Copy all source code into the container
 COPY . .
-RUN chmod -R 777 temp
 
+RUN apt-get update && apt-get install -y time
 # Expose port 4000
 EXPOSE 4000
 
 # Create a non-root user and switch to it for better security
+RUN mkdir -p temp && chmod -R 777 temp
 RUN useradd -m appuser
+RUN chown -R appuser:appuser /usr/src/app
 USER appuser
 
 # Run the compiler service using nodemon with 'npm run dev'

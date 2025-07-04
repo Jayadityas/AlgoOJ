@@ -1,7 +1,7 @@
-import express from 'express';
-import cors from 'cors';
-import bodyParser from 'body-parser';
-import { executeCode } from './service/codeExecutor.js';  // your existing code executor logic
+const express = require('express');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const { executeCode } = require('./service/codeExecutor');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -20,11 +20,7 @@ app.post('/', async (req, res) => {
     const start = Date.now();
     const result = await executeCode(code, language, input || '');
     const end = Date.now();
-
     const executionTime = end - start;
-
-    // The executeCode function should ideally return an object like:
-    // { success: true/false, output: '...', error: '...' }
 
     if (result.success) {
       return res.json({
@@ -33,7 +29,7 @@ app.post('/', async (req, res) => {
         executionTime,
       });
     } else {
-        console.error('Execution error:', result.error);
+      console.error('Execution error:', result.error);
       return res.json({
         success: false,
         error: result.error || 'Execution failed',

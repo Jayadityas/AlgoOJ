@@ -17,26 +17,26 @@ const ViewProblem = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#07034d] px-4 py-25 flex items-center justify-center">
-      <div className="w-full max-w-3xl bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-6 sm:p-10 text-gray-900 dark:text-gray-100 space-y-6">
-        <h1 className="text-4xl font-extrabold text-center text-indigo-700 dark:text-indigo-400 mb-6">
+    <div className="min-h-screen bg-gradient-to-r from-[#231df3] via-[#27f31d] to-[#f31db9]  px-4 py-25 flex items-center justify-center">
+      <div className="w-full max-w-3xl bg-white/30 dark:bg-gray-800 rounded-3xl shadow-2xl p-6 sm:p-10 text-gray-900 dark:text-gray-100 space-y-6">
+        <h1 className="text-4xl font-bold italic text-center text-indigo-700 dark:text-indigo-400 mb-6">
           {problem.title}
         </h1>
 
-        <div className="grid gap-6 text-sm sm:text-base">
+        <div className="grid gap-6 italic text-sm sm:text-base">
           <DetailSection title="Difficulty" content={problem.difficulty} />
           <DetailSection title="Statement" content={problem.description} />
           <DetailSection title="Input Format" content={problem.inputFormat} />
           <DetailSection title="Output Format" content={problem.outputFormat} />
           <DetailSection title="Constraints" content={problem.constraints} />
 
-          {problem.samples?.length > 0 && (
+          {problem.sampleTests?.length > 0 && (
             <div>
               <h2 className="text-xl font-semibold mb-2 text-indigo-600 dark:text-indigo-300">
                 Sample Test Cases
               </h2>
               <div className="space-y-4">
-                {problem.samples.map((test, idx) => (
+                {problem.sampleTests.map((test, idx) => (
                   <div
                     key={idx}
                     className="bg-gray-100 dark:bg-gray-700 rounded-lg px-4 py-3 shadow-inner"
@@ -89,7 +89,7 @@ const DetailSection = ({ title, content }) => (
     <h2 className="text-xl font-semibold text-indigo-600 dark:text-indigo-300 mb-1">
       {title}
     </h2>
-    <p className="pl-2 whitespace-pre-wrap break-words">{content || '—'}</p>
+    <p className="pl-2 whitespace-pre-wrap break-words">{content}</p>
   </div>
 );
 

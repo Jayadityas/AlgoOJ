@@ -1,7 +1,7 @@
 import { FaTwitter, FaLinkedin, FaEnvelope, FaGithub, FaDiscord, FaHeart } from "react-icons/fa";
 import { FiArrowUp } from "react-icons/fi";
 import { motion } from "framer-motion";
-import logo from "../assets/logo.jpg";
+import logo from "../assets/logo.png";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 
@@ -23,14 +23,12 @@ const Footer = () => {
 
   const socialLinks = [
     { icon: FaEnvelope, href: "mailto:contact@theoj.com", color: "hover:text-red-400", label: "Email" },
-    { icon: FaLinkedin, href: "https://www.linkedin.com/in/chetan-sharma-70ba70270", color: "hover:text-blue-400", label: "LinkedIn" },
-    { icon: FaTwitter, href: "https://twitter.com/theoj", color: "hover:text-sky-400", label: "Twitter" },
-    { icon: FaGithub, href: "https://github.com/ChetanSharma76", color: "hover:text-gray-300", label: "GitHub" },
-    { icon: FaDiscord, href: "https://discord.gg/theoj", color: "hover:text-indigo-400", label: "Discord" }
+    { icon: FaLinkedin, href: "https://www.linkedin.com/in/jayaditya-sahu-0b1a922b4/", color: "hover:text-blue-400", label: "LinkedIn" },
+    { icon: FaGithub, href: "https://github.com/Jayadityas", color: "hover:text-gray-300", label: "GitHub" }
   ];
 
   return (
-    <footer className="relative bg-gradient-to-br from-[#0a1930] via-[#0d1b2a] to-[#1b263b] overflow-hidden">
+    <footer className="relative bg-gradient-to-br from-[#f3f21d] via-[#f31d49] to-[#1de8f3] overflow-hidden">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -left-40 w-80 h-80 bg-blue-500/5 rounded-full blur-3xl animate-pulse"></div>
@@ -64,11 +62,11 @@ const Footer = () => {
                 transition={{ duration: 0.6 }}
                 className="text-center lg:text-left"
               >
-                <p className="text-gray-400 text-sm">
-                  © 2025 <span className="text-blue-400 font-semibold">THE OJ</span>. All rights reserved.
+                <p className="text-white text-sm">
+                  © 2025 <span className="text-white font-semibold">Algo Online Judge</span>. All rights reserved.
                 </p>
                 <p className="text-gray-300 text-xs mt-1">
-                  Made with <FaHeart className="inline w-5 h-5 text-red-400 mx-1" /> by <span className="text-blue-400 text-xl font-medium">Chetan Sharma</span>
+                <span className="text-white text-xl font-medium">By Jayaditya Sahu</span>
                 </p>
               </motion.div>
 
@@ -88,9 +86,8 @@ const Footer = () => {
                 />
                 <div>
                   <h3 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                    THE OJ
+                    Algo Online Judge
                   </h3>
-                  <p className="text-gray-300 text-sm">Code. Compete. Conquer.</p>
                 </div>
               </motion.div>
 

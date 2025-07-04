@@ -59,44 +59,53 @@ const registerUser = async (req, res) => {
 
 
 const loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    console.log(" Login attempt for:", email);
 
-    try {
-        
-        const { email, password } = req.body;
-
-        // Validating the input
-        if (!email || !password) {
-            return res.status(400).json({ success: false, message: 'Please fill all the fields!' });
-        }
-        if (!validator.isEmail(email)) {
-            return res.status(400).json({ success: false, message: 'Please enter a valid email!' });
-        }
-
-        // Check if the user exists in db
-        const existingUser = await User.findOne({ email });
-        if (!existingUser) {
-            return res.status(400).json({ success: false, message: 'User does not exist!' });
-        }
-
-        // Check if the password is correct
-        const isPasswordCorrect = await bcrypt.compare(password, existingUser.password);
-        if (!isPasswordCorrect) {
-            return res.status(400).json({ success: false, message: 'Incorrect Password!' });
-        }
-        
-        const role = existingUser.role
-
-        //generating jwt tokens for managing user sessions
-        const token = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET, { expiresIn: '3h' });
-
-        res.json({ success: true, message: `${existingUser.role} logged in successfully!`, token , role});
-
-
-    } catch (error) {
-        console.error('Error logging in user:', error);
-        res.status(500).json({ success: false, message: 'User Login failed!' });
+    // 1. Empty field check
+    if (!email || !password) {
+      console.log(" Missing email or password");
+      return res.status(400).json({ success: false, message: 'Please fill all the fields!' });
     }
-}
+
+    // 2. Invalid email format
+    if (!validator.isEmail(email)) {
+      console.log(" Invalid email format");
+      return res.status(400).json({ success: false, message: 'Please enter a valid email!' });
+    }
+
+    // 3. Check if user exists
+    const existingUser = await User.findOne({ email });
+    if (!existingUser) {
+      console.log(" No user found with email:", email);
+      return res.status(400).json({ success: false, message: 'User does not exist!' });
+    }
+
+    // 4. Password verification
+    const isPasswordCorrect = await bcrypt.compare(password, existingUser.password);
+    if (!isPasswordCorrect) {
+      console.log("Incorrect password for user:", email);
+      return res.status(400).json({ success: false, message: 'Incorrect Password!' });
+    }
+
+    const role = existingUser.role;
+    const token = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET, { expiresIn: '3h' });
+
+    console.log(" Login successful:", { email, role });
+
+    return res.json({
+      success: true,
+      message: `${existingUser.role} logged in successfully!`,
+      token,
+      role
+    });
+  } catch (error) {
+    console.error(" Login Error:", error);
+    return res.status(500).json({ success: false, message: 'User Login failed!' });
+  }
+};
+
 
 
 const getUserProfile = async (req, res) => {

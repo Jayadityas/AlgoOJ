@@ -83,7 +83,7 @@ const Contact = () => {
               24 hours.
             </p>
             <p>
-              You can also reach out to us directly at <motion.button  onClick={() => navigate('/login')}><span className="text-blue-300 font-semibold">jayaditya.sahu@gmail.com</span></motion.button>.
+              You can also reach out to us directly at <motion.button  onClick={() => navigate('/login')}><span className="text-blue-300 font-semibold">admin@AlgoOj.com</span></motion.button>.
             </p>
           </motion.div>
 

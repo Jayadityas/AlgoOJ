@@ -3,7 +3,8 @@ version: '3.9'
 services:
   ojbackend:
     build:
-      context: ./backend
+      context: .                 # <-- project root
+      dockerfile: ./backend/Dockerfile
     image: ojbackend
     container_name: ojbackend_container
     ports:

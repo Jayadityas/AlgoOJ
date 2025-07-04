@@ -1,14 +1,14 @@
-import { exec, spawn } from 'child_process';
-import fs from 'fs';
-import path from 'path';
-import { v4 as uuidv4 } from 'uuid';
+const { exec, spawn } = require('child_process');
+const fs = require('fs');
+const path = require('path');
+const { v4: uuidv4 } = require('uuid');
 
 const tempDir = path.join('./temp');
 if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir);
 
 const TIMEOUT_MS = 20000; // 20 seconds
 
-export const executeCode = (code, language, input = '') => {
+const executeCode = (code, language, input = '') => {
   return new Promise((resolve, reject) => {
     const isWindows = process.platform === 'win32';
     const fileExt =
@@ -63,7 +63,7 @@ export const executeCode = (code, language, input = '') => {
           let memoryUsed = null;
           if (!isWindows) {
             const memoryMatch = stderr.match(/Maximum resident set size.*:\s*(\d+)/);
-            memoryUsed = memoryMatch ? (parseInt(memoryMatch[1]) / 1024).toFixed(2) : null; // convert KB to MB
+            memoryUsed = memoryMatch ? (parseInt(memoryMatch[1]) / 1024).toFixed(2) : null; 
           }
 
           if (code !== 0) {
@@ -118,3 +118,5 @@ export const executeCode = (code, language, input = '') => {
     }
   });
 };
+
+module.exports = { executeCode };

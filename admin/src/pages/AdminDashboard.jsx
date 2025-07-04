@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect} from 'react';
+import React, { useContext, useState, useEffect, useRe } from 'react';
 import { AdminContext } from '../context/AdminContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -130,7 +130,7 @@ const Problems = () => {
   // Loading Screen Component
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#07034d] to-[#1e0750] flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#f31dbf] to-[#f3e91d] flex items-center justify-center">
         <div className="text-center">
           {/* Golden Spinning Circle */}
           <div className="w-16 h-16 border-4 border-yellow-400/30 border-t-yellow-400 rounded-full animate-spin mx-auto mb-4"></div>
@@ -151,7 +151,7 @@ const Problems = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#07034d] to-[#1e0750] py-30 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-[#f31da1] to-[#1dd2f3] py-30 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row">
         {/* Mobile Filter Button */}
         <div className="md:hidden mb-4">

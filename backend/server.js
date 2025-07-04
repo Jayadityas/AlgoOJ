@@ -1,5 +1,7 @@
+
 import express from 'express'
 import dotenv from 'dotenv'
+import connectDB from './config/mongodb.js'
 import cors from 'cors'
 import userRouter from './route/userRoute.js'
 import problemRouter from './route/problemRoute.js'
@@ -9,10 +11,7 @@ import submissionRouter from './route/submissionRoute.js'
 import ReviewRouter from './route/aiRoute.js';
 
 dotenv.config()
-import connectDB from './config/mongodb.js';
-console.log("Loaded MONGO_URI:", process.env.MONGO_URI);
-
-connectDB();
+connectDB()
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -26,7 +25,7 @@ app.use(cors())
 app.use('/api/user', userRouter)
 app.use('/api/problem', problemRouter)
 app.use('/api/leaderboard',leaderRouter)
-app.use('/api',contactRouter)
+app.use('/api/contact',contactRouter)
 app.use('/api',submissionRouter)
 app.use('/api/ai', ReviewRouter);
 
@@ -38,3 +37,6 @@ app.get('/', (req,res) => {
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
+
+
+

@@ -154,7 +154,7 @@ const Problems = () => {
         <div className="md:hidden mb-4">
           <button
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            className="flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg px-4 py-2 text-sm text-amber-400"
+            className="flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg px-4 py-2 text-sm text-[#fafa01]"
           >
             <FiFilter /> {isSidebarOpen ? 'Hide' : 'Show'} Filters
           </button>

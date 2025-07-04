@@ -5,41 +5,28 @@ import axios from 'axios'
 export const AppContext = createContext()
 
 const AppContextProvider = (props) => {
-
     const [userData, setUserData] = useState(null)
-    const [token, setToken] = useState(localStorage.getItem('token') ? localStorage.getItem('token') : false)               //whenever page reloads dom loads due to which states are intialized by their values
+    const [token, setToken] = useState(localStorage.getItem('token') || false)
     const [problems, setProblems] = useState([])
-    const backendUrl = import.meta.env.VITE_BACKEND_URL
-    const adminUrl = import.meta.env.VITE_ADMIN_URL
-   console.log("Backend URL is: ", backendUrl);
-    const getUserData = async () => {
 
+    const backendUrl = import.meta.env.VITE_BACKEND_URL
+    console.log("Backend URL is:", backendUrl)
+
+    const getUserData = async () => {
         try {
-            
-            const {data}  = await axios.get(`${backendUrl}/api/user/my-profile`, {headers:{token}})
-            console.log(data.user)
-            if(data.success){
-                setUserData(data.user)
-            }
-            else {
-                toast.error(data.message)
-            }
+            const { data } = await axios.get(`${backendUrl}/api/user/my-profile`, { headers: { token } })
+            if (data.success) setUserData(data.user)
+            else toast.error(data.message)
         } catch (error) {
             console.log(error)
             toast.error(error.message)
-            
         }
     }
 
     const getProblems = async () => {
-
         try {
-            
-            const {data} = await axios.get(`${backendUrl}/api/problem/all`)
-            console.log(data.problems)
-            if(data.success){
-                setProblems(data.problems)
-            }
+            const { data } = await axios.get(`${backendUrl}/api/problem/all`)
+            if (data.success) setProblems(data.problems)
             else {
                 setProblems([])
                 toast.error(data.message)
@@ -50,27 +37,17 @@ const AppContextProvider = (props) => {
         }
     }
 
-    const value = {
-        userData,setUserData,
-        token,setToken,
-        problems,setProblems,
-        backendUrl,adminUrl,
-        getUserData,getProblems,
-    }
+    useEffect(() => { getProblems() }, [])
+    useEffect(() => { token ? getUserData() : setUserData(null) }, [token])
 
-    useEffect(()=>{
-        getProblems();
-    },[])
-
-    //this will be called every time token changes
-    useEffect(()=>{
-        if(token)getUserData()
-        else setUserData(null)
-    },[token])
-
-
-    return( 
-        <AppContext.Provider value={value}>
+    return (
+        <AppContext.Provider value={{
+            userData, setUserData,
+            token, setToken,
+            problems, setProblems,
+            backendUrl,
+            getUserData, getProblems
+        }}>
             {props.children}
         </AppContext.Provider>
     )

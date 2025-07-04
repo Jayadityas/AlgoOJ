@@ -112,7 +112,7 @@ const Myprofile = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="min-h-screen bg-gradient-to-br from-[#07034d] to-[#1e0750] px-4 py-20"
+      className="min-h-screen bg-gradient-to-br from-[#f0228c] to-[#0a0dd3] px-4 py-20"
     >
       {/* Floating background elements */}
       <div className="absolute inset-0 overflow-hidden">
@@ -129,6 +129,7 @@ const Myprofile = () => {
           transition={{ duration: 0.6 }}
           className="text-3xl md:text-4xl font-bold text-center py-8 text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-amber-500"
         >
+          
           My Profile
         </motion.h1>
 
@@ -284,7 +285,7 @@ const Myprofile = () => {
                         whileTap={{ scale: 0.97 }}
                         type="button"
                         onClick={() => setEditing(false)}
-                        className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-6 py-2.5 rounded-lg shadow-lg transition-all duration-300 flex items-center"
+                        className="bg-white hover:from-gray-600 hover:to-gray-700 text-white px-6 py-2.5 rounded-lg shadow-lg transition-all duration-300 flex items-center"
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -305,14 +306,14 @@ const Myprofile = () => {
               className="grid grid-cols-2 gap-4"
             >
               <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4 text-center">
-                <FiCode className="h-8 w-8 text-indigo-400 mx-auto mb-2" />
+                <FiCode className="h-8 w-8 text-white mx-auto mb-2" />
                 <p className="text-2xl font-bold text-white">{userData.submissionsCount || 0}</p>
-                <p className="text-sm text-gray-400">Submissions</p>
+                <p className="text-sm text-white">Submissions</p>
               </div>
               <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4 text-center">
                 <FiBookmark className="h-8 w-8 text-yellow-400 mx-auto mb-2" />
                 <p className="text-2xl font-bold text-white">{userData.bookmarks?.length || 0}</p>
-                <p className="text-sm text-gray-400">Bookmarks</p>
+                <p className="text-sm text-white">Bookmarks</p>
               </div>
             </motion.div>
           </div>
@@ -394,7 +395,7 @@ const Myprofile = () => {
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => navigate('/problems')}
-                      className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-3 rounded-lg shadow-lg transition-all duration-300 flex items-center mx-auto"
+                      className="bg-gradient-to-r from-indigo-500 to-green-600 text-white px-6 py-3 rounded-lg shadow-lg transition-all duration-300 flex items-center mx-auto"
                     >
                       <FiCode className="h-5 w-5 mr-2" />
                       Browse Problems
@@ -460,7 +461,7 @@ const Myprofile = () => {
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => navigate('/problems')}
-                      className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-3 rounded-lg shadow-lg transition-all duration-300 flex items-center mx-auto"
+                      className="bg-gradient-to-r from-indigo-500 to-green-600 text-white px-6 py-3 rounded-lg shadow-lg transition-all duration-300 flex items-center mx-auto"
                     >
                       <FiCode className="h-5 w-5 mr-2" />
                       Browse Problems

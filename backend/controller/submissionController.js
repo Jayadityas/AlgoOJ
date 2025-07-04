@@ -35,7 +35,9 @@ const submitCode = async (req, res) => {
           input: inputData
         });
 
+
         const result = response.data;
+        
         totalExecutionTime += result.executionTime || 0;
 
         if (!result.success) {
@@ -134,7 +136,7 @@ const runCode = async (req, res) => {
 
     let verdict = '';
     let passed = false;
-
+console.log("Compiler raw response:", result);
     if (!result.success) {
       verdict = 'Compilation Error';
     } else if (!isCustomInput && expected && actualOutput !== expected) {

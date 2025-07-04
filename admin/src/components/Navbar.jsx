@@ -1,7 +1,7 @@
 import { useState, useContext } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
-import logo from "../assets/logo.jpg";
+import logo from "../assets/logo.png";
 import { AdminContext } from "../context/AdminContext";
 import LogoutButton from "./LogoutButton";
 import { toast } from "react-toastify";
@@ -36,7 +36,7 @@ const Navbar = () => {
             className="h-10 w-10 rounded-full cursor-pointer border border-white/30"
           />
           <span className="text-2xl font-bold text-white">
-            THE <span className="text-violet-400">OJ</span>
+            Algo Online Judge
           </span>
         </div>
 
@@ -47,7 +47,7 @@ const Navbar = () => {
               key={label}
               to={path}
               className={({ isActive }) =>
-                `text-lg font-medium text-violet-400 relative transition-all duration-300
+                `text-lg font-medium text-white relative transition-all duration-300
                  ${isActive ? "after:w-full" : "after:w-0"}
                  after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:bg-violet-500 after:transition-all after:duration-300 hover:after:w-full`
               }

@@ -37,7 +37,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#07034d] to-[#1e0750] px-4 py-25 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#1d20f3] via-[#23f31d] to-[#f31d4e] px-4 py-25 relative overflow-hidden">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-64 h-34 bg-purple-600 rounded-full mix-blend-overlay filter blur-3xl opacity-10 animate-blob"></div>
@@ -47,11 +47,11 @@ const Login = () => {
 
       {/* Login Card */}
       <div className="relative z-10 w-100 max-w-md">
-        <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-xl overflow-hidden border border-white/20">
+        <div className="bg-[#f31d7b] backdrop-blur-lg rounded-2xl shadow-xl overflow-hidden border border-white/20">
           {/* Card Header */}
           <div className="bg-gradient-to-r from-violet-600 to-pink-500 text-center p-2">
             <h2 className="text-2xl font-bold text-white">Admin Login</h2>
-            <p className="text-indigo-100 mt-1">Sign in to your dashboard</p>
+            <p className="text-white mt-1">Sign in to your dashboard</p>
           </div>
           
           {/* Card Body */}
@@ -106,14 +106,14 @@ const Login = () => {
                     id="remember-me"
                     name="remember-me"
                     type="checkbox"
-                    className="h-4 w-4 text-violet-600 focus:ring-violet-500 border-white/30 rounded bg-white/10"
+                    className="h-4 w-4 text-red focus:ring-violet-500 border-white/30 rounded bg-white/10"
                   />
                   <label htmlFor="remember-me" className="ml-2 block text-sm text-indigo-100">
                     Remember me
                   </label>
                 </div>
 
-                <div className="text-sm cursor-pointer">
+                <div className="text-white cursor-pointer">
                   <button 
                     type="button"
                     onClick={() => navigate('/forgot-password')}

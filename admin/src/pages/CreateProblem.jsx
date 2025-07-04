@@ -38,7 +38,7 @@ const CreateProblem = () => {
   const [testCaseZip, setTestCaseZip] = useState(null);
   const [isUploadingZip, setIsUploadingZip] = useState(false);
   const [activeSection, setActiveSection] = useState(0);
-  const {Problems,getProblems} = useContext(AdminContext);
+  const {problems,getProblems} = useContext(AdminContext);
 
   const inputRef = useRef(null);
   const outputRef = useRef(null);
@@ -161,7 +161,7 @@ const CreateProblem = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#07034d] py-25 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-r from-[#79f31d] via-[#f31da1] to-[#f3971d] py-25 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
       {/* Background Effects */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl"></div>
@@ -182,8 +182,7 @@ const CreateProblem = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
             </svg>
           </div>
-          <h2 className="text-3xl font-bold text-white mb-2">Create Problem</h2>
-          <p className="text-slate-400">Build your coding challenge</p>
+          <h2 className="text-3xl italic font-bold text-white mb-2">Create problems</h2>
         </motion.div>
 
         {/* Clean Glass Form Container */}
@@ -194,19 +193,19 @@ const CreateProblem = () => {
           className="relative backdrop-blur-xl bg-white/10 border border-white/20 rounded-3xl shadow-2xl overflow-hidden"
         >
           {/* Dark Inner Background */}
-          <div className="absolute inset-0 bg-slate-900/60 rounded-3xl"></div>
+          <div className="absolute inset-0 bg-slate-9000/60 rounded-3xl"></div>
           
           {/* Main Form Content */}
           <div className="relative">
             {/* Progress Steps */}
-            <div className="flex items-center justify-center p-6 border-b border-white/10 bg-slate-800/40">
+            <div className="flex items-center justify-center p-6 border-b border-white/10 bg-slate-500/40">
               {sections.map((section, index) => (
                 <div key={index} className="flex items-center">
                   <motion.div
                     className={`flex items-center gap-3 px-4 py-2 rounded-xl transition-all duration-300 ${
                       activeSection === index 
-                        ? 'bg-blue-500/20 text-blue-300 border border-blue-400/30' 
-                        : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/30'
+                        ? 'bg-blue-500/20 text-white border border-blue-400/30' 
+                        : 'text-slate-400 hover:text-slate-200 hover:bg-slate-7000/30'
                     }`}
                     whileHover={{ scale: 1.05 }}
                   >
@@ -241,7 +240,7 @@ const CreateProblem = () => {
                             value={title}
                             onChange={e => setTitle(e.target.value)}
                             required
-                            className="w-full px-4 py-3 bg-slate-800/80 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400/50 transition-all duration-300 shadow-lg group-hover:border-white/30"
+                            className="w-full px-4 py-3 bg-slate-800/70 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400/50 transition-all duration-300 shadow-lg group-hover:border-white/30"
                             placeholder="Enter problem title"
                           />
                           <div className="absolute inset-0 bg-gradient-to-r from-blue-400/5 to-purple-400/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
