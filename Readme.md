@@ -68,11 +68,13 @@ AlgoOJ is a full-stack Online Judge (OJ) platform built from scratch that allows
 
 ## 🚀 Local Development Setup
 
-### 🔧 Prerequisites
+🐳 Prerequisites
+---
+Node.js (v18+)
 
-- Node.js & npm
-- Docker & Docker Compose
-- MongoDB (local or cloud)
+Docker & Docker Compose
+
+MongoDB (or let Docker run it)
 
 ### 📦 Backend Setup (Dockerized)
 
